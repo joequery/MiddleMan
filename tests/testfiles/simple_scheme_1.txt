@@ -1,5 +1,5 @@
 {
-    "key1": ${{mykey1}},
+    "key1": ${{mykey1}}$,
     "key2": "some hardcoded value",
-    "time": ${{timezone}}
+    "time": ${{timezone}}$
 }

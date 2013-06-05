@@ -14,5 +14,5 @@ if __name__ == '__main__':
         from tests.v1.apitests import *
     """
 
-    from tests.parser_test import *
+    from tests.parser_test import ReferenceBNFExtraction
     unittest.main(verbosity=2)

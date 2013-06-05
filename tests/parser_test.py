@@ -3,6 +3,13 @@ from tests.testhelpers import testfile
 
 import parser
 
+class ReferenceBNFExtraction(unittest.TestCase):
+    def test_single_key(self):
+        reference = "mykey1"
+        expected = ["mykey1"]
+        extracted = parser.extract_reference_parts(reference)
+        self.assertListEqual(expected, extracted)
+
 class ReferenceValueExtraction(unittest.TestCase):
     def test_extract_simple_key_value_pair(self):
         rawJSON = testfile("simple_json_1.txt")

@@ -43,3 +43,9 @@ def extract_reference_value_from_json(reference, rawJSON):
     print("*" * 90)
 
     return ""
+
+def extract_reference_parts(reference):
+    """
+    Extract the portions of a reference according to the following grammar:
+    """
+    return []

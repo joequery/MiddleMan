@@ -11,32 +11,42 @@ class ReferenceBNFExtraction(unittest.TestCase):
         reference = "['mykey1']"
         expected = [["[", "mykey1", "]"]]
         extracted = parser.extract_reference_parts(reference)
-        self.assertEqual(expected, extracted)
+        self.assertEqual(expected, extracted.asList())
+        for e in extracted:
+            self.assertEqual("dict", e.getName())
 
     def test_single_dict_key_double_quotes(self):
         reference = '["mykey1"]'
         expected = [["[", "mykey1", "]"]]
         extracted = parser.extract_reference_parts(reference)
-        self.assertEqual(expected, extracted)
+        self.assertEqual(expected, extracted.asList())
+        for e in extracted:
+            self.assertEqual("dict", e.getName())
 
     def test_multiple_dict_keys_single_quotes(self):
         reference = "['mykey1']['myinnerkey2']"
         expected = [["[", "mykey1", "]"], ["[", "myinnerkey2", "]"]]
         extracted = parser.extract_reference_parts(reference)
-        self.assertEqual(expected, extracted)
+        self.assertEqual(expected, extracted.asList())
+        for e in extracted:
+            self.assertEqual("dict", e.getName())
 
     def test_multiple_dict_keys_double_quotes(self):
         reference = '["mykey1"]["myinnerkey2"]'
         expected = [["[", "mykey1", "]"], ["[", "myinnerkey2", "]"]]
         extracted = parser.extract_reference_parts(reference)
-        self.assertEqual(expected, extracted)
+        self.assertEqual(expected, extracted.asList())
+        for e in extracted:
+            self.assertEqual("dict", e.getName())
 
     def test_many_dict_keys(self):
         reference = "['mykey1']['myinnerkey2']['evendeeper3']"
         expected = [["[", "mykey1", "]"], ["[", "myinnerkey2", "]"], 
                 ["[", "evendeeper3", "]"]]
         extracted = parser.extract_reference_parts(reference)
-        self.assertEqual(expected, extracted)
+        self.assertEqual(expected, extracted.asList())
+        for e in extracted:
+            self.assertEqual("dict", e.getName())
 
     """
     Test simple index references
@@ -45,13 +55,17 @@ class ReferenceBNFExtraction(unittest.TestCase):
         reference = "[10]"
         expected = [["[", "10", "]"]]
         extracted = parser.extract_reference_parts(reference)
-        self.assertEqual(expected, extracted)
+        self.assertEqual(expected, extracted.asList())
+        for e in extracted:
+            self.assertEqual("index", e.getName())
 
     def test_multiple_indexes(self):
         reference = "[10][20]"
         expected = [["[", "10", "]"], ["[", "20", "]"]]
         extracted = parser.extract_reference_parts(reference)
-        self.assertEqual(expected, extracted)
+        self.assertEqual(expected, extracted.asList())
+        for e in extracted:
+            self.assertEqual("index", e.getName())
 
 class ReferenceValueExtraction(unittest.TestCase):
     def test_extract_simple_key_value_pair(self):

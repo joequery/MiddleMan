@@ -50,7 +50,8 @@ def extract_reference_value_from_json(reference, rawJSON):
 
 def extract_reference_parts(reference):
     referenceGrammar = reference_bnf()
-    return referenceGrammar.parseString(reference).asList()
+    parsed = referenceGrammar.parseString(reference)
+    return parsed
 
 def reference_bnf():
     """
@@ -87,7 +88,7 @@ def reference_bnf():
     # Indexes
     index = Group(lbracket + number + rbracket)
 
-    item = ddict ^ index
+    item = ddict("dict") ^ index("index")
 
     term = Forward()
     term << item + ZeroOrMore(term)

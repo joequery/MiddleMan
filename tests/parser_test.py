@@ -5,10 +5,10 @@ import parser
 
 class ReferenceBNFExtraction(unittest.TestCase):
     def test_single_key(self):
-        reference = "mykey1"
-        expected = ["mykey1"]
+        reference = "['mykey1']"
+        expected = ["[", "mykey1", "]"]
         extracted = parser.extract_reference_parts(reference)
-        self.assertListEqual(expected, extracted)
+        self.assertEqual(expected, extracted)
 
 class ReferenceValueExtraction(unittest.TestCase):
     def test_extract_simple_key_value_pair(self):

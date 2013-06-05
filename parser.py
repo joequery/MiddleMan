@@ -2,6 +2,10 @@
 
 import json
 import re
+from pyparsing import (
+    Literal, alphas, nums, alphanums, OneOrMore, Word, printables,
+    ZeroOrMore, Forward, oneOf, Group
+)
 
 def extract_references(scheme):
     """
@@ -45,7 +49,36 @@ def extract_reference_value_from_json(reference, rawJSON):
     return ""
 
 def extract_reference_parts(reference):
+    referenceGrammar = reference_bnf()
+    return referenceGrammar.parseString(reference).asList()
+
+def reference_bnf():
     """
-    Extract the portions of a reference according to the following grammar:
+    Grammar for the references allowed in the schemes:
+
+    term     :: atom{subrange|index|dict|subdict}
+    subrange :: '['{digit}':'[-]{digit}']'
+    index    :: '['digit']'
+    subdict  :: '{'atom{,atom}'}'
+
+    atom  :: alnum{alnum}
+    alpha :: a | b | ... | z | A | B | ... | Z
+    digit :: 0 | 1 | ... | 9
+    alnum :: alpha | digit
+    key   :: alpha{alnum}
     """
-    return []
+    lbracket = Literal("[")
+    rbracket = Literal("]")
+    quote = Literal('\'').suppress()
+    dblquote = Literal('"').suppress()
+    lbrace = Literal("{")
+    rbrace = Literal("}")
+    dash = Literal("-")
+    colon = Literal(":")
+    dot = Literal(".")
+    word = Word(alphanums)
+
+    dictSingle = lbracket + quote + OneOrMore(word) + quote + rbracket
+    dictDbl = lbracket + dblquote + OneOrMore(word) + dblquote + rbracket
+    ddict = dictSingle ^ dictDbl
+    return ddict

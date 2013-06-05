@@ -1,6 +1,7 @@
 import unittest
 from tests.testhelpers import testfile
 
+from pyparsing import ParseException
 import parser
 
 class ReferenceBNFExtractionSimple(unittest.TestCase):
@@ -223,8 +224,72 @@ class ReferenceBNFExtractionIntegration(unittest.TestCase):
             self.assertEqual(expectedTypes[i], e.getName())
 
 
+class ReferenceBNFExtractionErrors(unittest.TestCase):
+    """
+    Test errors with simple dicts
+    """
+    def test_dict_without_closing_bracket(self):
+        with self.assertRaises(ParseException):
+            reference = "['mykey1'"
+            parser.extract_reference_parts(reference)
 
+    def test_dict_without_opening_bracket(self):
+        with self.assertRaises(ParseException):
+            reference = "'mykey1']"
+            parser.extract_reference_parts(reference)
 
+    def test_dict_without_any_brackets(self):
+        with self.assertRaises(ParseException):
+            reference = "'mykey1'"
+            parser.extract_reference_parts(reference)
+
+    def test_dict_without_opening_quote(self):
+        with self.assertRaises(ParseException):
+            reference = "[mykey1']"
+            parser.extract_reference_parts(reference)
+
+    def test_dict_without_closing_quote(self):
+        with self.assertRaises(ParseException):
+            reference = "['mykey1]"
+            parser.extract_reference_parts(reference)
+
+    def test_dict_without_any_quotes(self):
+        with self.assertRaises(ParseException):
+            reference = "[mykey1]"
+            parser.extract_reference_parts(reference)
+
+    """
+    Test errors with simple indexes
+    """
+    def test_index_without_opening_bracket(self):
+        with self.assertRaises(ParseException):
+            reference = "1]"
+            parser.extract_reference_parts(reference)
+
+    def test_index_without_closing_bracket(self):
+        with self.assertRaises(ParseException):
+            reference = "[1"
+            parser.extract_reference_parts(reference)
+
+    def test_index_without_any_brackets(self):
+        with self.assertRaises(ParseException):
+            reference = "1"
+            parser.extract_reference_parts(reference)
+
+    def test_index_letter_in_number(self):
+        with self.assertRaises(ParseException):
+            reference = "[1a1]"
+            parser.extract_reference_parts(reference)
+
+    def test_index_trailing_symbol(self):
+        with self.assertRaises(ParseException):
+            reference = "[11-]"
+            parser.extract_reference_parts(reference)
+
+    def test_index_too_many_negative_signs(self):
+        with self.assertRaises(ParseException):
+            reference = "[--11]"
+            parser.extract_reference_parts(reference)
 
 class ReferenceValueExtraction(unittest.TestCase):
     def test_extract_simple_key_value_pair(self):

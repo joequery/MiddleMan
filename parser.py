@@ -3,8 +3,8 @@
 import json
 import re
 from pyparsing import (
-    Literal, alphas, nums, alphanums, OneOrMore, Word, printables,
-    ZeroOrMore, Forward, oneOf, Group
+    Literal, alphas, nums, alphanums, OneOrMore, Word, 
+    ZeroOrMore, Forward, oneOf, Group, Optional, Combine
 )
 
 def extract_references(scheme):
@@ -78,7 +78,8 @@ def reference_bnf():
     colon = Literal(":")
     dot = Literal(".")
     word = Word(alphanums)
-    number = Word(nums)
+    number = Combine(Optional(dash) + Word(nums))
+    negativeNumber = Combine(dash + Word(nums))
 
     # Dictionaries
     dictSingle = lbracket + quote + OneOrMore(word) + quote + rbracket
@@ -88,7 +89,10 @@ def reference_bnf():
     # Indexes
     index = Group(lbracket + number + rbracket)
 
-    item = ddict("dict") ^ index("index")
+    # Subrange
+    subrange = Group(lbracket + Optional(number) + colon + Optional(number) + rbracket)
+
+    item = ddict("dict") ^ index("index") ^ subrange("subrange")
 
     term = Forward()
     term << item + ZeroOrMore(term)

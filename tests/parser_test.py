@@ -28,6 +28,13 @@ class ReferenceBNFExtraction(unittest.TestCase):
         extracted = parser.extract_reference_parts(reference)
         self.assertEqual(expected, extracted)
 
+    def test_many_dict_keys(self):
+        reference = "['mykey1']['myinnerkey2']['evendeeper3']"
+        expected = [["[", "mykey1", "]"], ["[", "myinnerkey2", "]"], 
+                ["[", "evendeeper3", "]"]]
+        extracted = parser.extract_reference_parts(reference)
+        self.assertEqual(expected, extracted)
+
 class ReferenceValueExtraction(unittest.TestCase):
     def test_extract_simple_key_value_pair(self):
         rawJSON = testfile("simple_json_1.txt")

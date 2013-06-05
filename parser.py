@@ -80,6 +80,8 @@ def reference_bnf():
     word = Word(alphanums)
     number = Combine(Optional(dash) + Word(nums))
     negativeNumber = Combine(dash + Word(nums))
+    space = Literal(" ")
+    commaSep = (Literal(",") + Optional(space)).suppress()
 
     # Dictionaries
     dictSingle = lbracket + quote + OneOrMore(word) + quote + rbracket
@@ -92,8 +94,20 @@ def reference_bnf():
     # Subrange
     subrange = Group(lbracket + Optional(number) + colon + Optional(number) + rbracket)
 
-    item = ddict("dict") ^ index("index") ^ subrange("subrange")
+    # Subdictionary
+    subdictTermSingle = commaSep + quote + OneOrMore(word) + quote
+    subdictTermDbl = commaSep + dblquote + OneOrMore(word) + dblquote
 
-    term = Forward()
-    term << item + ZeroOrMore(term)
+    subdictSingle = lbrace + quote + OneOrMore(word) + quote + \
+            ZeroOrMore(subdictTermSingle) + rbrace
+    subdictDbl = lbrace + dblquote + OneOrMore(word) + dblquote + \
+            ZeroOrMore(subdictTermDbl) + rbrace
+    subdict = Group(subdictSingle ^ subdictDbl)
+
+    item = ddict("dict") ^ \
+           index("index") ^ \
+           subrange("subrange") ^ \
+           subdict("subdict")
+
+    term = OneOrMore(item)
     return term

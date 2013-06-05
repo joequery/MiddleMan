@@ -3,7 +3,7 @@ from tests.testhelpers import testfile
 
 import parser
 
-class ReferenceBNFExtraction(unittest.TestCase):
+class ReferenceBNFExtractionSimple(unittest.TestCase):
     """
     Test simple dictionary references
     """
@@ -117,6 +117,42 @@ class ReferenceBNFExtraction(unittest.TestCase):
         self.assertEqual(expected, extracted.asList())
         for e in extracted:
             self.assertEqual("subrange", e.getName())
+
+    """
+    Test simple subdict references
+    """
+    def test_subdict_with_one_key(self):
+        reference = "{'mykey1'}"
+        expected = [["{", "mykey1", "}"]]
+        extracted = parser.extract_reference_parts(reference)
+        self.assertEqual(expected, extracted.asList())
+        for e in extracted:
+            self.assertEqual("subdict", e.getName())
+
+    def test_subdict_with_one_key_with_dbl_quotes(self):
+        reference = '{"mykey1"}'
+        expected = [["{", "mykey1", "}"]]
+        extracted = parser.extract_reference_parts(reference)
+        self.assertEqual(expected, extracted.asList())
+        for e in extracted:
+            self.assertEqual("subdict", e.getName())
+
+    def test_subdict_with_two_keys_no_spaces(self):
+        reference = "{'mykey1','mykey2'}"
+        expected = [["{", "mykey1", "mykey2", "}"]]
+        extracted = parser.extract_reference_parts(reference)
+        self.assertEqual(expected, extracted.asList())
+        for e in extracted:
+            self.assertEqual("subdict", e.getName())
+
+    def test_subdict_with_two_keys_with_spaces(self):
+        reference = "{'mykey1', 'mykey2'}"
+        expected = [["{", "mykey1", "mykey2", "}"]]
+        extracted = parser.extract_reference_parts(reference)
+        self.assertEqual(expected, extracted.asList())
+        for e in extracted:
+            self.assertEqual("subdict", e.getName())
+
 
 class ReferenceValueExtraction(unittest.TestCase):
     def test_extract_simple_key_value_pair(self):

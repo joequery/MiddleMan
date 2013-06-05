@@ -81,9 +81,9 @@ def reference_bnf():
     number = Word(nums)
 
     # Dictionaries
-    dictSingle = Group(lbracket + quote + OneOrMore(word) + quote + rbracket)
-    dictDbl = Group(lbracket + dblquote + OneOrMore(word) + dblquote + rbracket)
-    ddict = dictSingle ^ dictDbl
+    dictSingle = lbracket + quote + OneOrMore(word) + quote + rbracket
+    dictDbl = lbracket + dblquote + OneOrMore(word) + dblquote + rbracket
+    ddict = Group(dictSingle ^ dictDbl)
 
     # Indexes
     index = Group(lbracket + number + rbracket)

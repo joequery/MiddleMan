@@ -35,4 +35,11 @@ def extract_reference_value_from_json(reference, rawJSON):
     >>> v
     "1"
     """
+    
+    # Get 'mykey' from ${{mykey}}. This form is guaranteed, so we'll just 
+    # hardcode it.
+    referenceStr = reference[3:-2]
+    print(referenceStr)
+    print("*" * 90)
 
+    return ""

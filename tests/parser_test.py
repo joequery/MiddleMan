@@ -5,7 +5,11 @@ import parser
 
 class ReferenceValueExtraction(unittest.TestCase):
     def test_extract_simple_key_value_pair(self):
-        self.assertTrue(True)
+        rawJSON = testfile("simple_json_1.txt")
+        reference = '${{mykey1}}'
+        expected = "myvalue1"
+        extracted = parser.extract_reference_value_from_json(reference, rawJSON)
+        self.assertEqual(expected, extracted)
 
 class JSONParserTest(unittest.TestCase):
     def test_extract_references_simple(self):

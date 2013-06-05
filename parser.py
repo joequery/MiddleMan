@@ -76,35 +76,39 @@ def reference_bnf():
     rbrace = Literal("}")
     dash = Literal("-")
     colon = Literal(":")
-    dot = Literal(".")
-    word = Word(alphanums)
+    words = OneOrMore(Word(alphanums))
     number = Combine(Optional(dash) + Word(nums))
-    negativeNumber = Combine(dash + Word(nums))
     space = Literal(" ")
     commaSep = (Literal(",") + Optional(space)).suppress()
 
-    # Dictionaries
-    dictSingle = lbracket + quote + OneOrMore(word) + quote + rbracket
-    dictDbl = lbracket + dblquote + OneOrMore(word) + dblquote + rbracket
-    ddict = Group(dictSingle ^ dictDbl)
+    # Wrapper functions for readability
+    def braces(s):
+        return lbrace + s + rbrace
 
-    # Indexes
-    index = Group(lbracket + number + rbracket)
+    def brackets(s):
+        return lbracket + s + rbracket
 
-    # Subrange
-    subrange = Group(lbracket + Optional(number) + colon + Optional(number) + rbracket)
+    def quotes(s):
+        return quote + s + quote
 
-    # Subdictionary
-    subdictTermSingle = commaSep + quote + OneOrMore(word) + quote
-    subdictTermDbl = commaSep + dblquote + OneOrMore(word) + dblquote
+    def dblquotes(s):
+        return dblquote + s + dblquote
 
-    subdictSingle = lbrace + quote + OneOrMore(word) + quote + \
-            ZeroOrMore(subdictTermSingle) + rbrace
-    subdictDbl = lbrace + dblquote + OneOrMore(word) + dblquote + \
-            ZeroOrMore(subdictTermDbl) + rbrace
+    # Dictionaries: ["some string"]
+    dicts = Group(brackets(quotes(words)) ^ brackets(dblquotes(words)))
+
+    # Indexes: [5]
+    index = Group(brackets(number))
+
+    # Subrange: [5:-1]
+    subrange = Group(brackets(Optional(number) + colon + Optional(number)))
+
+    # Subdictionary: {"some string", "some otherstring"}
+    subdictSingle = braces(quotes(words) + ZeroOrMore(commaSep + quotes(words)))
+    subdictDbl = braces(dblquotes(words) + ZeroOrMore(commaSep + dblquotes(words)))
     subdict = Group(subdictSingle ^ subdictDbl)
 
-    item = ddict("dict") ^ \
+    item = dicts("dict") ^ \
            index("index") ^ \
            subrange("subrange") ^ \
            subdict("subdict")

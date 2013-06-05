@@ -4,6 +4,9 @@ from tests.testhelpers import testfile
 import parser
 
 class ReferenceBNFExtraction(unittest.TestCase):
+    """
+    Test simple dictionary references
+    """
     def test_single_dict_key_single_quotes(self):
         reference = "['mykey1']"
         expected = [["[", "mykey1", "]"]]
@@ -32,6 +35,21 @@ class ReferenceBNFExtraction(unittest.TestCase):
         reference = "['mykey1']['myinnerkey2']['evendeeper3']"
         expected = [["[", "mykey1", "]"], ["[", "myinnerkey2", "]"], 
                 ["[", "evendeeper3", "]"]]
+        extracted = parser.extract_reference_parts(reference)
+        self.assertEqual(expected, extracted)
+
+    """
+    Test simple index references
+    """
+    def test_single_index(self):
+        reference = "[10]"
+        expected = [["[", "10", "]"]]
+        extracted = parser.extract_reference_parts(reference)
+        self.assertEqual(expected, extracted)
+
+    def test_multiple_indexes(self):
+        reference = "[10][20]"
+        expected = [["[", "10", "]"], ["[", "20", "]"]]
         extracted = parser.extract_reference_parts(reference)
         self.assertEqual(expected, extracted)
 

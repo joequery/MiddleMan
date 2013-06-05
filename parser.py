@@ -77,11 +77,18 @@ def reference_bnf():
     colon = Literal(":")
     dot = Literal(".")
     word = Word(alphanums)
+    number = Word(nums)
 
+    # Dictionaries
     dictSingle = Group(lbracket + quote + OneOrMore(word) + quote + rbracket)
     dictDbl = Group(lbracket + dblquote + OneOrMore(word) + dblquote + rbracket)
     ddict = dictSingle ^ dictDbl
 
+    # Indexes
+    index = Group(lbracket + number + rbracket)
+
+    item = ddict ^ index
+
     term = Forward()
-    term << ddict + ZeroOrMore(term)
+    term << item + ZeroOrMore(term)
     return term

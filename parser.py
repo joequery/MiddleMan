@@ -68,12 +68,12 @@ def reference_bnf():
     alnum :: alpha | digit
     key   :: alpha{alnum}
     """
-    lbracket = Literal("[")
-    rbracket = Literal("]")
+    lbracket = Literal("[").suppress()
+    rbracket = Literal("]").suppress()
     quote = Literal('\'').suppress()
     dblquote = Literal('"').suppress()
-    lbrace = Literal("{")
-    rbrace = Literal("}")
+    lbrace = Literal("{").suppress()
+    rbrace = Literal("}").suppress()
     dash = Literal("-")
     colon = Literal(":")
     words = OneOrMore(Word(alphanums))

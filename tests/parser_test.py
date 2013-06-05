@@ -9,7 +9,7 @@ class ReferenceBNFExtractionSimple(unittest.TestCase):
     """
     def test_single_dict_key_single_quotes(self):
         reference = "['mykey1']"
-        expected = [["[", "mykey1", "]"]]
+        expected = [["mykey1"]]
         extracted = parser.extract_reference_parts(reference)
         self.assertEqual(expected, extracted.asList())
         for e in extracted:
@@ -17,7 +17,7 @@ class ReferenceBNFExtractionSimple(unittest.TestCase):
 
     def test_single_dict_key_double_quotes(self):
         reference = '["mykey1"]'
-        expected = [["[", "mykey1", "]"]]
+        expected = [["mykey1"]]
         extracted = parser.extract_reference_parts(reference)
         self.assertEqual(expected, extracted.asList())
         for e in extracted:
@@ -25,7 +25,7 @@ class ReferenceBNFExtractionSimple(unittest.TestCase):
 
     def test_multiple_dict_keys_single_quotes(self):
         reference = "['mykey1']['myinnerkey2']"
-        expected = [["[", "mykey1", "]"], ["[", "myinnerkey2", "]"]]
+        expected = [["mykey1"], ["myinnerkey2"]]
         extracted = parser.extract_reference_parts(reference)
         self.assertEqual(expected, extracted.asList())
         for e in extracted:
@@ -33,7 +33,7 @@ class ReferenceBNFExtractionSimple(unittest.TestCase):
 
     def test_multiple_dict_keys_double_quotes(self):
         reference = '["mykey1"]["myinnerkey2"]'
-        expected = [["[", "mykey1", "]"], ["[", "myinnerkey2", "]"]]
+        expected = [["mykey1"], ["myinnerkey2"]]
         extracted = parser.extract_reference_parts(reference)
         self.assertEqual(expected, extracted.asList())
         for e in extracted:
@@ -41,8 +41,7 @@ class ReferenceBNFExtractionSimple(unittest.TestCase):
 
     def test_many_dict_keys(self):
         reference = "['mykey1']['myinnerkey2']['evendeeper3']"
-        expected = [["[", "mykey1", "]"], ["[", "myinnerkey2", "]"], 
-                ["[", "evendeeper3", "]"]]
+        expected = [["mykey1"],["myinnerkey2"],["evendeeper3"]]
         extracted = parser.extract_reference_parts(reference)
         self.assertEqual(expected, extracted.asList())
         for e in extracted:
@@ -53,7 +52,7 @@ class ReferenceBNFExtractionSimple(unittest.TestCase):
     """
     def test_single_index(self):
         reference = "[10]"
-        expected = [["[", "10", "]"]]
+        expected = [["10"]]
         extracted = parser.extract_reference_parts(reference)
         self.assertEqual(expected, extracted.asList())
         for e in extracted:
@@ -61,7 +60,7 @@ class ReferenceBNFExtractionSimple(unittest.TestCase):
 
     def test_multiple_indexes(self):
         reference = "[10][20]"
-        expected = [["[", "10", "]"], ["[", "20", "]"]]
+        expected = [["10"], ["20"]]
         extracted = parser.extract_reference_parts(reference)
         self.assertEqual(expected, extracted.asList())
         for e in extracted:
@@ -72,7 +71,7 @@ class ReferenceBNFExtractionSimple(unittest.TestCase):
     """
     def test_single_subrange_with_both_numbers(self):
         reference = "[10:20]"
-        expected = [["[", "10", ":", "20", "]"]]
+        expected = [["10", ":", "20"]]
         extracted = parser.extract_reference_parts(reference)
         self.assertEqual(expected, extracted.asList())
         for e in extracted:
@@ -80,7 +79,7 @@ class ReferenceBNFExtractionSimple(unittest.TestCase):
 
     def test_single_subrange_with_negative_second_number(self):
         reference = "[10:-20]"
-        expected = [["[", "10", ":", "-20", "]"]]
+        expected = [["10", ":", "-20"]]
         extracted = parser.extract_reference_parts(reference)
         self.assertEqual(expected, extracted.asList())
         for e in extracted:
@@ -88,7 +87,7 @@ class ReferenceBNFExtractionSimple(unittest.TestCase):
 
     def test_single_subrange_with_blank_first_number(self):
         reference = "[:10]"
-        expected = [["[", ":", "10", "]"]]
+        expected = [[":", "10"]]
         extracted = parser.extract_reference_parts(reference)
         self.assertEqual(expected, extracted.asList())
         for e in extracted:
@@ -96,7 +95,7 @@ class ReferenceBNFExtractionSimple(unittest.TestCase):
 
     def test_single_subrange_with_blank_first_number_negative_second_number(self):
         reference = "[:-10]"
-        expected = [["[", ":", "-10", "]"]]
+        expected = [[":", "-10"]]
         extracted = parser.extract_reference_parts(reference)
         self.assertEqual(expected, extracted.asList())
         for e in extracted:
@@ -104,7 +103,7 @@ class ReferenceBNFExtractionSimple(unittest.TestCase):
 
     def test_single_subrange_with_blank_second_number(self):
         reference = "[10:]"
-        expected = [["[", "10", ":", "]"]]
+        expected = [["10", ":"]]
         extracted = parser.extract_reference_parts(reference)
         self.assertEqual(expected, extracted.asList())
         for e in extracted:
@@ -112,7 +111,7 @@ class ReferenceBNFExtractionSimple(unittest.TestCase):
 
     def test_single_subrange_with_no_numbers(self):
         reference = "[:]"
-        expected = [["[", ":", "]"]]
+        expected = [[":"]]
         extracted = parser.extract_reference_parts(reference)
         self.assertEqual(expected, extracted.asList())
         for e in extracted:
@@ -123,7 +122,7 @@ class ReferenceBNFExtractionSimple(unittest.TestCase):
     """
     def test_subdict_with_one_key(self):
         reference = "{'mykey1'}"
-        expected = [["{", "mykey1", "}"]]
+        expected = [["mykey1"]]
         extracted = parser.extract_reference_parts(reference)
         self.assertEqual(expected, extracted.asList())
         for e in extracted:
@@ -131,7 +130,7 @@ class ReferenceBNFExtractionSimple(unittest.TestCase):
 
     def test_subdict_with_one_key_with_dbl_quotes(self):
         reference = '{"mykey1"}'
-        expected = [["{", "mykey1", "}"]]
+        expected = [["mykey1"]]
         extracted = parser.extract_reference_parts(reference)
         self.assertEqual(expected, extracted.asList())
         for e in extracted:
@@ -139,7 +138,7 @@ class ReferenceBNFExtractionSimple(unittest.TestCase):
 
     def test_subdict_with_two_keys_no_spaces(self):
         reference = "{'mykey1','mykey2'}"
-        expected = [["{", "mykey1", "mykey2", "}"]]
+        expected = [["mykey1", "mykey2"]]
         extracted = parser.extract_reference_parts(reference)
         self.assertEqual(expected, extracted.asList())
         for e in extracted:
@@ -147,7 +146,7 @@ class ReferenceBNFExtractionSimple(unittest.TestCase):
 
     def test_subdict_with_two_keys_with_spaces(self):
         reference = "{'mykey1', 'mykey2'}"
-        expected = [["{", "mykey1", "mykey2", "}"]]
+        expected = [["mykey1", "mykey2"]]
         extracted = parser.extract_reference_parts(reference)
         self.assertEqual(expected, extracted.asList())
         for e in extracted:

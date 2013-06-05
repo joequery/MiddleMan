@@ -4,9 +4,27 @@ from tests.testhelpers import testfile
 import parser
 
 class ReferenceBNFExtraction(unittest.TestCase):
-    def test_single_key(self):
+    def test_single_dict_key_single_quotes(self):
         reference = "['mykey1']"
-        expected = ["[", "mykey1", "]"]
+        expected = [["[", "mykey1", "]"]]
+        extracted = parser.extract_reference_parts(reference)
+        self.assertEqual(expected, extracted)
+
+    def test_single_dict_key_double_quotes(self):
+        reference = '["mykey1"]'
+        expected = [["[", "mykey1", "]"]]
+        extracted = parser.extract_reference_parts(reference)
+        self.assertEqual(expected, extracted)
+
+    def test_multiple_dict_keys_single_quotes(self):
+        reference = "['mykey1']['myinnerkey2']"
+        expected = [["[", "mykey1", "]"], ["[", "myinnerkey2", "]"]]
+        extracted = parser.extract_reference_parts(reference)
+        self.assertEqual(expected, extracted)
+
+    def test_multiple_dict_keys_double_quotes(self):
+        reference = '["mykey1"]["myinnerkey2"]'
+        expected = [["[", "mykey1", "]"], ["[", "myinnerkey2", "]"]]
         extracted = parser.extract_reference_parts(reference)
         self.assertEqual(expected, extracted)
 

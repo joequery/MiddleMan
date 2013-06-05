@@ -78,7 +78,10 @@ def reference_bnf():
     dot = Literal(".")
     word = Word(alphanums)
 
-    dictSingle = lbracket + quote + OneOrMore(word) + quote + rbracket
-    dictDbl = lbracket + dblquote + OneOrMore(word) + dblquote + rbracket
+    dictSingle = Group(lbracket + quote + OneOrMore(word) + quote + rbracket)
+    dictDbl = Group(lbracket + dblquote + OneOrMore(word) + dblquote + rbracket)
     ddict = dictSingle ^ dictDbl
-    return ddict
+
+    term = Forward()
+    term << ddict + ZeroOrMore(term)
+    return term

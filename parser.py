@@ -57,16 +57,15 @@ def reference_bnf():
     """
     Grammar for the references allowed in the schemes:
 
-    term     :: atom{subrange|index|dict|subdict}
+    item     :: {subrange|index|dict|subdict}
     subrange :: '['{digit}':'[-]{digit}']'
     index    :: '['digit']'
-    subdict  :: '{'atom{,atom}'}'
+    subdict  :: '{'words{,words}'}'
 
-    atom  :: alnum{alnum}
+    words  :: alnum{alnum}
     alpha :: a | b | ... | z | A | B | ... | Z
     digit :: 0 | 1 | ... | 9
     alnum :: alpha | digit
-    key   :: alpha{alnum}
     """
     lbracket = Literal("[").suppress()
     rbracket = Literal("]").suppress()

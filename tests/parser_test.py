@@ -152,6 +152,21 @@ class ReferenceBNFExtractionSimple(unittest.TestCase):
         for e in extracted:
             self.assertEqual("subdict", e.getName())
 
+class ReferenceBNFExtractionIntegration(unittest.TestCase):
+    """
+    Test complex combinations of references
+    """
+    def test_index_after_simple_dict(self):
+        reference = "['mykey1'][5]"
+        expected = [["mykey1"], ["5"]]
+        extracted = parser.extract_reference_parts(reference)
+        self.assertEqual(expected, extracted.asList())
+
+        expectedTypes = ["dict", "index"]
+        
+        for i,e in enumerate(extracted):
+            self.assertEqual(expectedTypes[i], e.getName())
+
 
 class ReferenceValueExtraction(unittest.TestCase):
     def test_extract_simple_key_value_pair(self):

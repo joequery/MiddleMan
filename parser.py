@@ -57,8 +57,8 @@ def reference_bnf():
     """
     Grammar for the references allowed in the schemes:
 
-    item     :: {subrange|index|dict|subdict}
-    subrange :: '['{digit}':'[-]{digit}']'
+    item     :: {sublist|index|dict|subdict}
+    sublist :: '['{digit}':'[-]{digit}']'
     index    :: '['digit']'
     subdict  :: '{'words{,words}'}'
 
@@ -100,7 +100,7 @@ def reference_bnf():
     index = Group(brackets(number))
 
     # Subrange: [5:-1]
-    subrange = Group(brackets(Optional(number) + colon + Optional(number)))
+    sublist = Group(brackets(Optional(number) + colon + Optional(number)))
 
     # Subdictionary: {"some string", "some otherstring"}
     subdictSingle = braces(quotes(words) + ZeroOrMore(commaSep + quotes(words)))
@@ -109,7 +109,7 @@ def reference_bnf():
 
     item = dicts("dict") ^ \
            index("index") ^ \
-           subrange("subrange") ^ \
+           sublist("sublist") ^ \
            subdict("subdict")
 
     term = OneOrMore(item)

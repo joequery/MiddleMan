@@ -67,55 +67,55 @@ class ReferenceBNFExtractionSimple(unittest.TestCase):
             self.assertEqual("index", e.getName())
 
     """
-    Test simple subrange references
+    Test simple sublist references
     """
-    def test_single_subrange_with_both_numbers(self):
+    def test_single_sublist_with_both_numbers(self):
         reference = "[10:20]"
         expected = [["10", ":", "20"]]
         extracted = parser.extract_reference_parts(reference)
         self.assertEqual(expected, extracted.asList())
         for e in extracted:
-            self.assertEqual("subrange", e.getName())
+            self.assertEqual("sublist", e.getName())
 
-    def test_single_subrange_with_negative_second_number(self):
+    def test_single_sublist_with_negative_second_number(self):
         reference = "[10:-20]"
         expected = [["10", ":", "-20"]]
         extracted = parser.extract_reference_parts(reference)
         self.assertEqual(expected, extracted.asList())
         for e in extracted:
-            self.assertEqual("subrange", e.getName())
+            self.assertEqual("sublist", e.getName())
 
-    def test_single_subrange_with_blank_first_number(self):
+    def test_single_sublist_with_blank_first_number(self):
         reference = "[:10]"
         expected = [[":", "10"]]
         extracted = parser.extract_reference_parts(reference)
         self.assertEqual(expected, extracted.asList())
         for e in extracted:
-            self.assertEqual("subrange", e.getName())
+            self.assertEqual("sublist", e.getName())
 
-    def test_single_subrange_with_blank_first_number_negative_second_number(self):
+    def test_single_sublist_with_blank_first_number_negative_second_number(self):
         reference = "[:-10]"
         expected = [[":", "-10"]]
         extracted = parser.extract_reference_parts(reference)
         self.assertEqual(expected, extracted.asList())
         for e in extracted:
-            self.assertEqual("subrange", e.getName())
+            self.assertEqual("sublist", e.getName())
 
-    def test_single_subrange_with_blank_second_number(self):
+    def test_single_sublist_with_blank_second_number(self):
         reference = "[10:]"
         expected = [["10", ":"]]
         extracted = parser.extract_reference_parts(reference)
         self.assertEqual(expected, extracted.asList())
         for e in extracted:
-            self.assertEqual("subrange", e.getName())
+            self.assertEqual("sublist", e.getName())
 
-    def test_single_subrange_with_no_numbers(self):
+    def test_single_sublist_with_no_numbers(self):
         reference = "[:]"
         expected = [[":"]]
         extracted = parser.extract_reference_parts(reference)
         self.assertEqual(expected, extracted.asList())
         for e in extracted:
-            self.assertEqual("subrange", e.getName())
+            self.assertEqual("sublist", e.getName())
 
     """
     Test simple subdict references
@@ -166,6 +166,64 @@ class ReferenceBNFExtractionIntegration(unittest.TestCase):
         
         for i,e in enumerate(extracted):
             self.assertEqual(expectedTypes[i], e.getName())
+
+    def test_simple_dict_after_index(self):
+        reference = "[5]['mykey1']"
+        expected = [["5"], ["mykey1"]]
+        extracted = parser.extract_reference_parts(reference)
+        self.assertEqual(expected, extracted.asList())
+
+        expectedTypes = ["index", "dict"]
+        
+        for i,e in enumerate(extracted):
+            self.assertEqual(expectedTypes[i], e.getName())
+
+    def test_subdict_after_dict(self):
+        reference = "['mykey1']{'innerkey1', 'innerkey2'}"
+        expected = [["mykey1"], ["innerkey1", "innerkey2"]]
+        extracted = parser.extract_reference_parts(reference)
+        self.assertEqual(expected, extracted.asList())
+
+        expectedTypes = ["dict", "subdict"]
+        
+        for i,e in enumerate(extracted):
+            self.assertEqual(expectedTypes[i], e.getName())
+
+    def test_subdict_after_sublist(self):
+        reference = "[1:5]{'innerkey1', 'innerkey2'}"
+        expected = [["1", ":", "5"], ["innerkey1", "innerkey2"]]
+        extracted = parser.extract_reference_parts(reference)
+        self.assertEqual(expected, extracted.asList())
+
+        expectedTypes = ["sublist", "subdict"]
+        
+        for i,e in enumerate(extracted):
+            self.assertEqual(expectedTypes[i], e.getName())
+
+    def test_sublist_after_subdict(self):
+        reference = "{'innerkey1', 'innerkey2'}[1:5]"
+        expected = [["innerkey1", "innerkey2"], ["1", ":", "5"]]
+        extracted = parser.extract_reference_parts(reference)
+        self.assertEqual(expected, extracted.asList())
+
+        expectedTypes = ["subdict", "sublist"]
+        
+        for i,e in enumerate(extracted):
+            self.assertEqual(expectedTypes[i], e.getName())
+
+    def test_dict_sublist_dict_index(self):
+        reference = "['mykey1'][4:]['myinnerkey'][-1]"
+        expected = [["mykey1"], ["4", ":"], ["myinnerkey"], ["-1"]]
+        extracted = parser.extract_reference_parts(reference)
+        self.assertEqual(expected, extracted.asList())
+
+        expectedTypes = ["dict", "sublist", "dict", "index"]
+        
+        for i,e in enumerate(extracted):
+            self.assertEqual(expectedTypes[i], e.getName())
+
+
+
 
 
 class ReferenceValueExtraction(unittest.TestCase):

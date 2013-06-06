@@ -128,3 +128,19 @@ class ReferenceBNFSimpleErrors(unittest.TestCase):
         with self.assertRaises(ParseException):
             reference = "{'testing}"
             parser.extract_reference_parts(reference)
+
+class ReferenceBNFComplexErrors(unittest.TestCase):
+    def test_malformed_dicts(self):
+        references = []
+        valid = []
+        references.append("[['hello']]")
+        references.append("['hello']['hello")
+        for r in references:
+            try:
+                parser.extract_reference_parts(r)
+                valid.append(r)
+            except ParseException:
+                pass
+
+        self.assertEqual(valid, [])
+

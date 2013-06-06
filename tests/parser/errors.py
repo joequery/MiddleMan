@@ -7,7 +7,7 @@ from pyparsing import ParseException
 import parser
 
 class ReferenceBNFErrors(unittest.TestCase):
-    def test_malformed_dicts(self):
+    def test_malformed_keys(self):
         badreferences = []
         valid = []
         badreferences.append("[['hello']]")

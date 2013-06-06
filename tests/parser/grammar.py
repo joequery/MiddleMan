@@ -5,47 +5,47 @@ import parser
 
 class ReferenceBNFExtractionSimple(unittest.TestCase):
     """
-    Test simple dictionary references
+    Test simple key references
     """
-    def test_single_dict_key_single_quotes(self):
+    def test_single_key_single_quotes(self):
         reference = "['mykey1']"
         expected = [["mykey1"]]
         extracted = parser.extract_reference_parts(reference)
         self.assertEqual(expected, extracted.asList())
         for e in extracted:
-            self.assertEqual("dict", e.getName())
+            self.assertEqual("key", e.getName())
 
-    def test_single_dict_key_double_quotes(self):
+    def test_single_key_double_quotes(self):
         reference = '["mykey1"]'
         expected = [["mykey1"]]
         extracted = parser.extract_reference_parts(reference)
         self.assertEqual(expected, extracted.asList())
         for e in extracted:
-            self.assertEqual("dict", e.getName())
+            self.assertEqual("key", e.getName())
 
-    def test_multiple_dict_keys_single_quotes(self):
+    def test_multiple_keys_single_quotes(self):
         reference = "['mykey1']['myinnerkey2']"
         expected = [["mykey1"], ["myinnerkey2"]]
         extracted = parser.extract_reference_parts(reference)
         self.assertEqual(expected, extracted.asList())
         for e in extracted:
-            self.assertEqual("dict", e.getName())
+            self.assertEqual("key", e.getName())
 
-    def test_multiple_dict_keys_double_quotes(self):
+    def test_multiple_keys_double_quotes(self):
         reference = '["mykey1"]["myinnerkey2"]'
         expected = [["mykey1"], ["myinnerkey2"]]
         extracted = parser.extract_reference_parts(reference)
         self.assertEqual(expected, extracted.asList())
         for e in extracted:
-            self.assertEqual("dict", e.getName())
+            self.assertEqual("key", e.getName())
 
-    def test_many_dict_keys(self):
+    def test_many_keys(self):
         reference = "['mykey1']['myinnerkey2']['evendeeper3']"
         expected = [["mykey1"],["myinnerkey2"],["evendeeper3"]]
         extracted = parser.extract_reference_parts(reference)
         self.assertEqual(expected, extracted.asList())
         for e in extracted:
-            self.assertEqual("dict", e.getName())
+            self.assertEqual("key", e.getName())
 
     """
     Test simple index references
@@ -156,35 +156,35 @@ class ReferenceBNFExtractionComplex(unittest.TestCase):
     """
     Test complex combinations of references
     """
-    def test_index_after_simple_dict(self):
+    def test_index_after_simple_key(self):
         reference = "['mykey1'][5]"
         expected = [["mykey1"], ["5"]]
         extracted = parser.extract_reference_parts(reference)
         self.assertEqual(expected, extracted.asList())
 
-        expectedTypes = ["dict", "index"]
+        expectedTypes = ["key", "index"]
         
         for i,e in enumerate(extracted):
             self.assertEqual(expectedTypes[i], e.getName())
 
-    def test_simple_dict_after_index(self):
+    def test_simple_key_after_index(self):
         reference = "[5]['mykey1']"
         expected = [["5"], ["mykey1"]]
         extracted = parser.extract_reference_parts(reference)
         self.assertEqual(expected, extracted.asList())
 
-        expectedTypes = ["index", "dict"]
+        expectedTypes = ["index", "key"]
         
         for i,e in enumerate(extracted):
             self.assertEqual(expectedTypes[i], e.getName())
 
-    def test_subdict_after_dict(self):
+    def test_subdict_after_key(self):
         reference = "['mykey1']{'innerkey1', 'innerkey2'}"
         expected = [["mykey1"], ["innerkey1", "innerkey2"]]
         extracted = parser.extract_reference_parts(reference)
         self.assertEqual(expected, extracted.asList())
 
-        expectedTypes = ["dict", "subdict"]
+        expectedTypes = ["key", "subdict"]
         
         for i,e in enumerate(extracted):
             self.assertEqual(expectedTypes[i], e.getName())
@@ -211,13 +211,13 @@ class ReferenceBNFExtractionComplex(unittest.TestCase):
         for i,e in enumerate(extracted):
             self.assertEqual(expectedTypes[i], e.getName())
 
-    def test_dict_sublist_dict_index(self):
+    def test_key_sublist_key_index(self):
         reference = "['mykey1'][4:]['myinnerkey'][-1]"
         expected = [["mykey1"], ["4", ":"], ["myinnerkey"], ["-1"]]
         extracted = parser.extract_reference_parts(reference)
         self.assertEqual(expected, extracted.asList())
 
-        expectedTypes = ["dict", "sublist", "dict", "index"]
+        expectedTypes = ["key", "sublist", "key", "index"]
         
         for i,e in enumerate(extracted):
             self.assertEqual(expectedTypes[i], e.getName())

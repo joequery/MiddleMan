@@ -1,4 +1,0 @@
-{
-    "mykey1": "myvalue1",
-    "timezone": "US/Central"
-}

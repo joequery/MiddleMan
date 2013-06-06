@@ -7,14 +7,31 @@ import json
 
 class ReferenceUsage(unittest.TestCase):
     def test_extract_references_simple(self):
-        scheme = testfile("simple_scheme_1.txt")
+        scheme = """
+        {
+            "key1": "${['mykey1']}$",
+            "key2": "some hardcoded value",
+            "time": "${['timezone']}$"
+        }
+        """
         references = parser.extract_reference_strings(scheme)
         expected = ["${['mykey1']}$", "${['timezone']}$"]
         self.assertListEqual(expected, references)
 
     def test_apply_scheme_to_json_simple(self):
-        scheme = testfile("simple_scheme_1.txt")
-        rawJSON = testfile("simple_json_1.txt")
+        scheme = """
+        {
+            "key1": "${['mykey1']}$",
+            "key2": "some hardcoded value",
+            "time": "${['timezone']}$"
+        }
+        """
+        rawJSON = """
+        {
+            "mykey1": "myvalue1",
+            "timezone": "US/Central"
+        }
+        """
 
         jsonAfterApplication = parser.apply_scheme_to_json(scheme, rawJSON)
         js = json.loads(jsonAfterApplication)
@@ -26,15 +43,32 @@ class ReferenceUsage(unittest.TestCase):
         self.assertDictEqual(expected, js)
 
     def test_apply_scheme_httpbin_get_example(self):
-        scheme = testfile("httpbinScheme.txt")
-        rawJSON = testfile("httpbinGET.txt")
+        rawJSON = """
+        {
+          "url": "http://httpbin.org/get",
+          "headers": {
+            "Host": "httpbin.org",
+            "Connection": "close",
+            "Accept": "*/*",
+            "User-Agent": "Wget/1.13.4 (linux-gnu)"
+          },
+          "args": {},
+          "origin": "74.192.112.168"
+        }
+        """
+        scheme = "${['headers']['Host']}$, ${['origin']}$"
 
         result = parser.apply_scheme_to_json(scheme, rawJSON).strip()
         expected = "httpbin.org, 74.192.112.168"
         self.assertEqual(expected, result)
 
     def test_extract_simple_key_value_pair(self):
-        rawJSON = testfile("simple_json_1.txt")
+        rawJSON = """
+        {
+            "mykey1": "myvalue1",
+            "timezone": "US/Central"
+        }
+        """
         reference = '${["mykey1"]}$'
         expected = "myvalue1"
         extracted = parser.extract_reference_value_from_json(reference, rawJSON)

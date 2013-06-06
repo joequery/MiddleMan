@@ -34,8 +34,13 @@ def apply_scheme_to_json(scheme, rawJSON):
     referenceData = []
     for rs in referenceStrings:
         value = extract_reference_value_from_json(rs, rawJSON)
-        valueJSON = json.dumps(value)
-        referenceData.append((rs, valueJSON))
+
+        # Don't json encode normal strings, otherwise we end up with extra
+        # (possibly unwanted) quotes. Users can surround references in their
+        # scheme with quotes if they want them.
+        if not isinstance(value, str) and not isinstance(value, unicode):
+            value = json.dumps(value)
+        referenceData.append((rs, value))
 
     for referenceString, value in referenceData:
         scheme = scheme.replace(referenceString, value)

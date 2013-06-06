@@ -25,6 +25,14 @@ class ReferenceUsage(unittest.TestCase):
         }
         self.assertDictEqual(expected, js)
 
+    def test_apply_scheme_httpbin_get_example(self):
+        scheme = testfile("httpbinScheme.txt")
+        rawJSON = testfile("httpbinGET.txt")
+
+        result = parser.apply_scheme_to_json(scheme, rawJSON).strip()
+        expected = "httpbin.org, 74.192.112.168"
+        self.assertEqual(expected, result)
+
     def test_extract_simple_key_value_pair(self):
         rawJSON = testfile("simple_json_1.txt")
         reference = '${{["mykey1"]}}$'

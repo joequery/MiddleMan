@@ -134,11 +134,11 @@ class ReferenceBNFComplexErrors(unittest.TestCase):
         references = []
         valid = []
         references.append("[['hello']]")
-        references.append("['hello']['hello")
+        references.append("['hello'][")
         for r in references:
             try:
-                parser.extract_reference_parts(r)
-                valid.append(r)
+                extracted = parser.extract_reference_parts(r)
+                valid.append((r, extracted.getName()))
             except ParseException:
                 pass
 

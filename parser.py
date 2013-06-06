@@ -98,6 +98,16 @@ def extract_reference_value_from_json(referenceStr, rawJSON):
             for key in ref:
                 newDict[key] = data[key]
             return newDict
+        elif isinstance(data, list):
+            newList = []
+            for d in data:
+                newDict = {}
+                for key in ref:
+                    newDict[key] = d[key]
+                newList.append(newDict)
+            return newList
+
+
 
     # Mapping of reference types to their extraction helper functions.
     referenceTypeMap = {

@@ -125,3 +125,43 @@ class SchemeApplication(unittest.TestCase):
             "inner3":3
         }
         self.assertDictEqual(expected, result)
+
+    def test_with_list_of_dicts(self):
+        rawJSON = """
+        {
+            "key1": [
+                {"inner3": 13, "inner2": 12, "inner1": 11}, 
+                {"inner3": 23, "inner2": 22, "inner1": 21}, 
+                {"inner3": 33, "inner2": 32, "inner1": 31}
+            ]
+        }
+        """
+        scheme = '${["key1"]{"inner1","inner3"}}$'
+        resultStr = parser.apply_scheme_to_json(scheme, rawJSON)
+        result = json.loads(resultStr)
+        expected = [
+            {"inner1":11, "inner3":13},
+            {"inner1":21, "inner3":23},
+            {"inner1":31, "inner3":33}
+        ]
+        self.assertListEqual(expected, result)
+
+        scheme = '${["key1"][1:]{"inner1","inner3"}}$'
+        resultStr = parser.apply_scheme_to_json(scheme, rawJSON)
+        result = json.loads(resultStr)
+        expected = [
+            {"inner1":21, "inner3":23},
+            {"inner1":31, "inner3":33}
+        ]
+        self.assertListEqual(expected, result)
+
+        scheme = '${["key1"][-1]{"inner1","inner3"}}$'
+        resultStr = parser.apply_scheme_to_json(scheme, rawJSON)
+        result = json.loads(resultStr)
+        expected = {"inner1":31, "inner3":33}
+        self.assertDictEqual(expected, result)
+
+        scheme = '${["key1"][1:]{"inner1","inner3"}[0]["inner1"]}$'
+        resultStr = parser.apply_scheme_to_json(scheme, rawJSON)
+        expected = "21"
+        self.assertEqual(expected, resultStr)

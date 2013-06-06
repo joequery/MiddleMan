@@ -1,7 +1,6 @@
+# Tests that demonstrate proper references.
 import unittest
 from tests.testhelpers import testfile
-
-from pyparsing import ParseException
 import parser
 
 class ReferenceBNFExtractionSimple(unittest.TestCase):
@@ -153,7 +152,7 @@ class ReferenceBNFExtractionSimple(unittest.TestCase):
         for e in extracted:
             self.assertEqual("subdict", e.getName())
 
-class ReferenceBNFExtractionIntegration(unittest.TestCase):
+class ReferenceBNFExtractionComplex(unittest.TestCase):
     """
     Test complex combinations of references
     """
@@ -222,157 +221,5 @@ class ReferenceBNFExtractionIntegration(unittest.TestCase):
         
         for i,e in enumerate(extracted):
             self.assertEqual(expectedTypes[i], e.getName())
-
-
-class ReferenceBNFExtractionErrors(unittest.TestCase):
-    """
-    Test errors with simple dicts
-    """
-    def test_dict_without_closing_bracket(self):
-        with self.assertRaises(ParseException):
-            reference = "['mykey1'"
-            parser.extract_reference_parts(reference)
-
-    def test_dict_without_opening_bracket(self):
-        with self.assertRaises(ParseException):
-            reference = "'mykey1']"
-            parser.extract_reference_parts(reference)
-
-    def test_dict_without_any_brackets(self):
-        with self.assertRaises(ParseException):
-            reference = "'mykey1'"
-            parser.extract_reference_parts(reference)
-
-    def test_dict_without_opening_quote(self):
-        with self.assertRaises(ParseException):
-            reference = "[mykey1']"
-            parser.extract_reference_parts(reference)
-
-    def test_dict_without_closing_quote(self):
-        with self.assertRaises(ParseException):
-            reference = "['mykey1]"
-            parser.extract_reference_parts(reference)
-
-    def test_dict_without_any_quotes(self):
-        with self.assertRaises(ParseException):
-            reference = "[mykey1]"
-            parser.extract_reference_parts(reference)
-
-    """
-    Test errors with simple indexes
-    """
-    def test_index_without_opening_bracket(self):
-        with self.assertRaises(ParseException):
-            reference = "1]"
-            parser.extract_reference_parts(reference)
-
-    def test_index_without_closing_bracket(self):
-        with self.assertRaises(ParseException):
-            reference = "[1"
-            parser.extract_reference_parts(reference)
-
-    def test_index_without_any_brackets(self):
-        with self.assertRaises(ParseException):
-            reference = "1"
-            parser.extract_reference_parts(reference)
-
-    def test_index_letter_in_number(self):
-        with self.assertRaises(ParseException):
-            reference = "[1a1]"
-            parser.extract_reference_parts(reference)
-
-    def test_index_trailing_symbol(self):
-        with self.assertRaises(ParseException):
-            reference = "[11-]"
-            parser.extract_reference_parts(reference)
-
-    def test_index_too_many_negative_signs(self):
-        with self.assertRaises(ParseException):
-            reference = "[--11]"
-            parser.extract_reference_parts(reference)
-
-    """
-    Test errors with simple sublists
-    """
-    def test_sublist_without_opening_bracket(self):
-        with self.assertRaises(ParseException):
-            reference = "1:2]"
-            parser.extract_reference_parts(reference)
-
-    def test_sublist_without_closing_bracket(self):
-        with self.assertRaises(ParseException):
-            reference = "[1:2"
-            parser.extract_reference_parts(reference)
-
-    def test_sublist_too_many_colons(self):
-        with self.assertRaises(ParseException):
-            reference = "[1::2]"
-            parser.extract_reference_parts(reference)
-
-    def test_sublist_trailing_colons(self):
-        with self.assertRaises(ParseException):
-            reference = "[1:2:]"
-            parser.extract_reference_parts(reference)
-
-    def test_sublist_non_numeric_symbols(self):
-        with self.assertRaises(ParseException):
-            reference = "[1:a]"
-            parser.extract_reference_parts(reference)
-
-    """
-    Test errors with simple subdicts
-    """
-    def test_subdicts_without_opening_brace(self):
-        with self.assertRaises(ParseException):
-            reference = "'testing'}"
-            parser.extract_reference_parts(reference)
-
-    def test_subdicts_without_closing_brace(self):
-        with self.assertRaises(ParseException):
-            reference = "{'testing'"
-            parser.extract_reference_parts(reference)
-
-    def test_subdicts_with_trailing_comma(self):
-        with self.assertRaises(ParseException):
-            reference = "{'testing', 'test2', }"
-            parser.extract_reference_parts(reference)
-
-    def test_subdicts_without_opening_quote(self):
-        with self.assertRaises(ParseException):
-            reference = "{testing'}"
-            parser.extract_reference_parts(reference)
-
-    def test_subdicts_without_closing_quote(self):
-        with self.assertRaises(ParseException):
-            reference = "{'testing}"
-            parser.extract_reference_parts(reference)
-
-class ReferenceValueExtraction(unittest.TestCase):
-    def test_extract_simple_key_value_pair(self):
-        rawJSON = testfile("simple_json_1.txt")
-        reference = '${{mykey1}}$'
-        expected = "myvalue1"
-        extracted = parser.extract_reference_value_from_json(reference, rawJSON)
-        self.assertEqual(expected, extracted)
-
-class JSONParserTest(unittest.TestCase):
-    def test_extract_references_simple(self):
-        scheme = testfile("simple_scheme_1.txt")
-        references = parser.extract_references(scheme)
-        expected = ['${{mykey1}}$', '${{timezone}}$']
-        self.assertListEqual(expected, references)
-
-    def test_apply_scheme_to_json_simple(self):
-        scheme = testfile("simple_scheme_1.txt")
-        rawJSON = testfile("simple_json_1.txt")
-
-        jsonAfterApplication = parser.apply_scheme_to_json(scheme, rawJSON)
-        expected = {
-            "key1": "myvalue1", 
-            "key2": "some hardcoded value", 
-            "time": "US/Central"
-        }
-
-        self.assertDictEqual(expected, jsonAfterApplication)
 
 

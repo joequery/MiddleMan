@@ -20,7 +20,7 @@ def extract_reference_strings(scheme):
 
     Where timestamp and user_id are keys in a JSON result.
     """
-    pattern = "\${[^}]+}\$"
+    pattern = "\${[^$]+}\$"
     results = re.findall(pattern, scheme)
     return results
 
@@ -88,19 +88,29 @@ def extract_reference_value_from_json(referenceStr, rawJSON):
 
         return data[lidx:ridx]
 
+    def extract_via_subdict(ref, data):
+        # If data is a dict, assume the user wants a simple subdict in return.
+        # If data is a list, assume the list is a list of identically structured
+        # dictionaries, and the user wants to extract particular elements
+        # from each dictionary. We will then return a list of dicts.
+        if isinstance(data, dict):
+            newDict = {}
+            for key in ref:
+                newDict[key] = data[key]
+            return newDict
 
     # Mapping of reference types to their extraction helper functions.
     referenceTypeMap = {
         "key": extract_via_key,
         "index": extract_via_index,
         "sublist": extract_via_sublist,
+        "subdict": extract_via_subdict,
     }
     
     # Get 'mykey' from ${mykey}. This form is guaranteed, so we'll just 
     # hardcode it.
     reference = referenceStr[2:-2]
     data = json.loads(rawJSON)
-
     referenceParts = extract_reference_parts(reference)
     for r in referenceParts:
         fn = referenceTypeMap.get(r.getName())

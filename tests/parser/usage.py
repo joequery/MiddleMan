@@ -114,3 +114,14 @@ class SchemeApplication(unittest.TestCase):
         result = parser.apply_scheme_to_json(scheme, rawJSON)
         expected = '{"numbers": [0, 1, 2, 3]}'
         self.assertEqual(expected, result)
+
+    def test_subdict_with_simple_dict(self):
+        rawJSON = '{"mykey": {"inner2": 2, "inner3": 3, "inner1": 1}}'
+        scheme = '${["mykey"]{"inner1","inner3"}}$'
+        resultStr = parser.apply_scheme_to_json(scheme, rawJSON)
+        result = json.loads(resultStr)
+        expected = {
+            "inner1":1,
+            "inner3":3
+        }
+        self.assertDictEqual(expected, result)

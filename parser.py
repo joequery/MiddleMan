@@ -6,15 +6,16 @@ from pyparsing import (
     Literal, alphas, nums, alphanums, OneOrMore, Word, 
     ZeroOrMore, Forward, oneOf, Group, Optional, Combine, stringEnd
 )
+from copy import deepcopy
 
-def extract_references(scheme):
+def extract_reference_strings(scheme):
     """
-    Extract all references, which are of the form ${{mykey}}$, from the scheme.
+    Extract all references, which are of the form ${{reference}}$, from the scheme.
     A scheme may look like
 
         {
-            "time": ${{timestamp}}$,
-            "id": ${{user_id}}$
+            "time": ${{['timestamp']}}$,
+            "id": ${{['user_id']}}$
         }
 
     Where timestamp and user_id are keys in a JSON result.
@@ -29,24 +30,49 @@ def apply_scheme_to_json(scheme, rawJSON):
     have their corresponding values replaced. Returns the dict representing the
     json.
     """
-    return {"key1":"myvalue1"}
+    referenceStrings = extract_reference_strings(scheme)
+    referenceData = []
+    for rs in referenceStrings:
+        value = extract_reference_value_from_json(rs, rawJSON)
+        valueJSON = json.dumps(value)
+        referenceData.append((rs, valueJSON))
 
-def extract_reference_value_from_json(reference, rawJSON):
+    for referenceString, value in referenceData:
+        scheme = scheme.replace(referenceString, value)
+    return scheme
+
+def extract_reference_value_from_json(referenceStr, rawJSON):
     """
     Extract the value of the key represented by reference from the JSON.
     For example, 
-    >>> v = extract_reference_value_from_json("${{mykey}}", '{"mykey": "1"}')
+    >>> v = extract_reference_value_from_json("${{['mykey']}}", '{"mykey": "1"}')
     >>> v
     "1"
     """
+
+    # Extraction helper functions for the various reference types. 
+    # All helper functions should have two parameters: the reference, and the
+    # data
+    def extract_via_key(ref, data):
+        return data.get(ref[0])
+
+    # Mapping of reference types to their extraction helper functions.
+    referenceTypeMap = {
+        "key": extract_via_key
+    }
     
     # Get 'mykey' from ${{mykey}}. This form is guaranteed, so we'll just 
     # hardcode it.
-    referenceStr = reference[3:-3]
-    print(referenceStr)
-    print("*" * 90)
+    reference = referenceStr[3:-3]
+    data = json.loads(rawJSON)
 
-    return ""
+    referenceParts = extract_reference_parts(reference)
+    for r in referenceParts:
+        fn = referenceTypeMap.get(r.getName())
+        data = fn(r, data)
+
+    return data
+
 
 def extract_reference_parts(reference):
     referenceGrammar = reference_bnf()

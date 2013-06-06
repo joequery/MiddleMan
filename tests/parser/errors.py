@@ -6,136 +6,95 @@ from tests.testhelpers import testfile
 from pyparsing import ParseException
 import parser
 
-class ReferenceBNFSimpleErrors(unittest.TestCase):
-    """
-    Test errors with simple dicts
-    """
-    def test_dict_without_closing_bracket(self):
-        with self.assertRaises(ParseException):
-            reference = "['mykey1'"
-            parser.extract_reference_parts(reference)
-
-    def test_dict_without_opening_bracket(self):
-        with self.assertRaises(ParseException):
-            reference = "'mykey1']"
-            parser.extract_reference_parts(reference)
-
-    def test_dict_without_any_brackets(self):
-        with self.assertRaises(ParseException):
-            reference = "'mykey1'"
-            parser.extract_reference_parts(reference)
-
-    def test_dict_without_opening_quote(self):
-        with self.assertRaises(ParseException):
-            reference = "[mykey1']"
-            parser.extract_reference_parts(reference)
-
-    def test_dict_without_closing_quote(self):
-        with self.assertRaises(ParseException):
-            reference = "['mykey1]"
-            parser.extract_reference_parts(reference)
-
-    def test_dict_without_any_quotes(self):
-        with self.assertRaises(ParseException):
-            reference = "[mykey1]"
-            parser.extract_reference_parts(reference)
-
-    """
-    Test errors with simple indexes
-    """
-    def test_index_without_opening_bracket(self):
-        with self.assertRaises(ParseException):
-            reference = "1]"
-            parser.extract_reference_parts(reference)
-
-    def test_index_without_closing_bracket(self):
-        with self.assertRaises(ParseException):
-            reference = "[1"
-            parser.extract_reference_parts(reference)
-
-    def test_index_without_any_brackets(self):
-        with self.assertRaises(ParseException):
-            reference = "1"
-            parser.extract_reference_parts(reference)
-
-    def test_index_letter_in_number(self):
-        with self.assertRaises(ParseException):
-            reference = "[1a1]"
-            parser.extract_reference_parts(reference)
-
-    def test_index_trailing_symbol(self):
-        with self.assertRaises(ParseException):
-            reference = "[11-]"
-            parser.extract_reference_parts(reference)
-
-    def test_index_too_many_negative_signs(self):
-        with self.assertRaises(ParseException):
-            reference = "[--11]"
-            parser.extract_reference_parts(reference)
-
-    """
-    Test errors with simple sublists
-    """
-    def test_sublist_without_opening_bracket(self):
-        with self.assertRaises(ParseException):
-            reference = "1:2]"
-            parser.extract_reference_parts(reference)
-
-    def test_sublist_without_closing_bracket(self):
-        with self.assertRaises(ParseException):
-            reference = "[1:2"
-            parser.extract_reference_parts(reference)
-
-    def test_sublist_too_many_colons(self):
-        with self.assertRaises(ParseException):
-            reference = "[1::2]"
-            parser.extract_reference_parts(reference)
-
-    def test_sublist_trailing_colons(self):
-        with self.assertRaises(ParseException):
-            reference = "[1:2:]"
-            parser.extract_reference_parts(reference)
-
-    def test_sublist_non_numeric_symbols(self):
-        with self.assertRaises(ParseException):
-            reference = "[1:a]"
-            parser.extract_reference_parts(reference)
-
-    """
-    Test errors with simple subdicts
-    """
-    def test_subdicts_without_opening_brace(self):
-        with self.assertRaises(ParseException):
-            reference = "'testing'}"
-            parser.extract_reference_parts(reference)
-
-    def test_subdicts_without_closing_brace(self):
-        with self.assertRaises(ParseException):
-            reference = "{'testing'"
-            parser.extract_reference_parts(reference)
-
-    def test_subdicts_with_trailing_comma(self):
-        with self.assertRaises(ParseException):
-            reference = "{'testing', 'test2', }"
-            parser.extract_reference_parts(reference)
-
-    def test_subdicts_without_opening_quote(self):
-        with self.assertRaises(ParseException):
-            reference = "{testing'}"
-            parser.extract_reference_parts(reference)
-
-    def test_subdicts_without_closing_quote(self):
-        with self.assertRaises(ParseException):
-            reference = "{'testing}"
-            parser.extract_reference_parts(reference)
-
-class ReferenceBNFComplexErrors(unittest.TestCase):
+class ReferenceBNFErrors(unittest.TestCase):
     def test_malformed_dicts(self):
-        references = []
+        badreferences = []
         valid = []
-        references.append("[['hello']]")
-        references.append("['hello'][")
-        for r in references:
+        badreferences.append("[['hello']]")
+        badreferences.append("['hello'][")
+        badreferences.append("['hello']['hello']]")
+        for r in badreferences:
+            try:
+                extracted = parser.extract_reference_parts(r)
+                types = []
+                for e in extracted:
+                    types.append(e.getName())
+                valid.append((r, extracted.asList(), types))
+            except ParseException:
+                pass
+
+        self.assertEqual(valid, [])
+
+    def test_malformed_indexes(self):
+        badreferences = []
+        valid = []
+        badreferences.append("[1-]")
+        badreferences.append("[--1]")
+        badreferences.append("[x]")
+        badreferences.append("[+1]")
+        for r in badreferences:
+            try:
+                extracted = parser.extract_reference_parts(r)
+                types = []
+                for e in extracted:
+                    types.append(e.getName())
+                valid.append((r, extracted.asList(), types))
+            except ParseException:
+                pass
+
+        self.assertEqual(valid, [])
+
+    def test_malformed_sublists(self):
+        badreferences = []
+        valid = []
+        badreferences.append("[--1:-1]")
+        badreferences.append("[1:-1-]")
+        badreferences.append("[1:-1")
+        badreferences.append("1:-1]")
+        for r in badreferences:
+            try:
+                extracted = parser.extract_reference_parts(r)
+                types = []
+                for e in extracted:
+                    types.append(e.getName())
+                valid.append((r, extracted.asList(), types))
+            except ParseException:
+                pass
+
+        self.assertEqual(valid, [])
+
+    def test_malformed_subdicts(self):
+        badreferences = []
+        valid = []
+        badreferences.append("{'something', 'something2}")
+        badreferences.append("{'something', 'something2}}")
+        badreferences.append("{'something', 'something2',}")
+        badreferences.append("{'mykey',}")
+        badreferences.append("{,'mykey'}")
+        for r in badreferences:
+            try:
+                extracted = parser.extract_reference_parts(r)
+                types = []
+                for e in extracted:
+                    types.append(e.getName())
+                valid.append((r, extracted.asList(), types))
+            except ParseException:
+                pass
+
+        self.assertEqual(valid, [])
+
+    def test_malformed_combinations(self):
+        badreferences = []
+        valid = []
+        badreferences.append("[1:2{'mykey'}]")
+        badreferences.append("[1:2]{'mykey'}]")
+        badreferences.append("[1]{'mykey'}[]")
+        badreferences.append("[1]{'mykey'}[a]")
+        badreferences.append("[1]{'mykey'}[5:5-]")
+        badreferences.append("[1]{'mykey'[5:5]")
+        badreferences.append("['test'][-1]{'key1', 'key2',}")
+        badreferences.append("['test'][-1]{'key1', 'key2'[5:10]")
+        for r in badreferences:
             try:
                 extracted = parser.extract_reference_parts(r)
                 types = []

@@ -4,7 +4,7 @@ import json
 import re
 from pyparsing import (
     Literal, alphas, nums, alphanums, OneOrMore, Word, 
-    ZeroOrMore, Forward, oneOf, Group, Optional, Combine
+    ZeroOrMore, Forward, oneOf, Group, Optional, Combine, stringEnd
 )
 
 def extract_references(scheme):
@@ -112,5 +112,5 @@ def reference_bnf():
            sublist("sublist") ^ \
            subdict("subdict")
 
-    term = OneOrMore(item)
+    term = OneOrMore(item) + stringEnd
     return term

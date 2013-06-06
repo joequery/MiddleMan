@@ -291,6 +291,62 @@ class ReferenceBNFExtractionErrors(unittest.TestCase):
             reference = "[--11]"
             parser.extract_reference_parts(reference)
 
+    """
+    Test errors with simple sublists
+    """
+    def test_sublist_without_opening_bracket(self):
+        with self.assertRaises(ParseException):
+            reference = "1:2]"
+            parser.extract_reference_parts(reference)
+
+    def test_sublist_without_closing_bracket(self):
+        with self.assertRaises(ParseException):
+            reference = "[1:2"
+            parser.extract_reference_parts(reference)
+
+    def test_sublist_too_many_colons(self):
+        with self.assertRaises(ParseException):
+            reference = "[1::2]"
+            parser.extract_reference_parts(reference)
+
+    def test_sublist_trailing_colons(self):
+        with self.assertRaises(ParseException):
+            reference = "[1:2:]"
+            parser.extract_reference_parts(reference)
+
+    def test_sublist_non_numeric_symbols(self):
+        with self.assertRaises(ParseException):
+            reference = "[1:a]"
+            parser.extract_reference_parts(reference)
+
+    """
+    Test errors with simple subdicts
+    """
+    def test_subdicts_without_opening_brace(self):
+        with self.assertRaises(ParseException):
+            reference = "'testing'}"
+            parser.extract_reference_parts(reference)
+
+    def test_subdicts_without_closing_brace(self):
+        with self.assertRaises(ParseException):
+            reference = "{'testing'"
+            parser.extract_reference_parts(reference)
+
+    def test_subdicts_with_trailing_comma(self):
+        with self.assertRaises(ParseException):
+            reference = "{'testing', 'test2', }"
+            parser.extract_reference_parts(reference)
+
+    def test_subdicts_without_opening_quote(self):
+        with self.assertRaises(ParseException):
+            reference = "{testing'}"
+            parser.extract_reference_parts(reference)
+
+    def test_subdicts_without_closing_quote(self):
+        with self.assertRaises(ParseException):
+            reference = "{'testing}"
+            parser.extract_reference_parts(reference)
+
 class ReferenceValueExtraction(unittest.TestCase):
     def test_extract_simple_key_value_pair(self):
         rawJSON = testfile("simple_json_1.txt")

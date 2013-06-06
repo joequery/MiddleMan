@@ -31,8 +31,8 @@ class ReferenceHelpers(unittest.TestCase):
         self.assertEqual(expected, extracted)
 
 
-class ReferenceUseCases(unittest.TestCase):
-    def test_apply_scheme_to_json_simple(self):
+class SchemeApplication(unittest.TestCase):
+    def test_simple(self):
         scheme = """
         {
             "key1": "${['mykey1']}$",
@@ -56,7 +56,7 @@ class ReferenceUseCases(unittest.TestCase):
         }
         self.assertDictEqual(expected, js)
 
-    def test_apply_scheme_httpbin_get_example(self):
+    def test_httpbin_get_example(self):
         rawJSON = """
         {
           "url": "http://httpbin.org/get",
@@ -74,4 +74,43 @@ class ReferenceUseCases(unittest.TestCase):
 
         result = parser.apply_scheme_to_json(scheme, rawJSON).strip()
         expected = "httpbin.org, 74.192.112.168"
+        self.assertEqual(expected, result)
+
+    def test_index_with_simple_list(self):
+        rawJSON = '{"key2": [0, 1, 2, 3], "key1": "value1"}'
+        scheme = "${['key1']}$${['key2'][2]}$"
+        result = parser.apply_scheme_to_json(scheme, rawJSON)
+        expected = "value12"
+        self.assertEqual(expected, result)
+
+        scheme = "${['key1']}$${['key2'][-1]}$"
+        result = parser.apply_scheme_to_json(scheme, rawJSON)
+        expected = "value13"
+        self.assertEqual(expected, result)
+
+    def test_sublist_with_simple_list(self):
+        rawJSON = '{"key2": [0, 1, 2, 3], "key1": "value1"}'
+        scheme = '{"numbers": ${["key2"][1:3]}$}'
+        result = parser.apply_scheme_to_json(scheme, rawJSON)
+        expected = '{"numbers": [1, 2]}'
+        self.assertEqual(expected, result)
+
+        scheme = '{"numbers": ${["key2"][1:]}$}'
+        result = parser.apply_scheme_to_json(scheme, rawJSON)
+        expected = '{"numbers": [1, 2, 3]}'
+        self.assertEqual(expected, result)
+
+        scheme = '{"numbers": ${["key2"][:-1]}$}'
+        result = parser.apply_scheme_to_json(scheme, rawJSON)
+        expected = '{"numbers": [0, 1, 2]}'
+        self.assertEqual(expected, result)
+
+        scheme = '{"numbers": ${["key2"][:]}$}'
+        result = parser.apply_scheme_to_json(scheme, rawJSON)
+        expected = '{"numbers": [0, 1, 2, 3]}'
+        self.assertEqual(expected, result)
+
+        scheme = '{"numbers": ${["key2"]}$}'
+        result = parser.apply_scheme_to_json(scheme, rawJSON)
+        expected = '{"numbers": [0, 1, 2, 3]}'
         self.assertEqual(expected, result)

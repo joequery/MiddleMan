@@ -61,9 +61,39 @@ def extract_reference_value_from_json(referenceStr, rawJSON):
     def extract_via_key(ref, data):
         return data.get(ref[0])
 
+    def extract_via_index(ref, data):
+        index = int(ref[0])
+        return data[index]
+
+    def extract_via_sublist(ref, data):
+        size = len(ref)
+        # Example - ['5', ':', '-5'] => [5:-5]
+        if size == 3:
+            lidx = int(ref[0])
+            ridx = int(ref[2])
+
+        # Example - ['2', ':'] => [2:] OR [':', '-1'] => [:-1]
+        elif size == 2:
+            if ref[0] == ":":
+                lidx = 0
+                ridx = int(ref[1])
+            else:
+                lidx = int(ref[0])
+                ridx = len(data)
+
+        # Only possibility - [':'] => [:]
+        elif size == 1:
+            lidx = 0
+            ridx = len(data)
+
+        return data[lidx:ridx]
+
+
     # Mapping of reference types to their extraction helper functions.
     referenceTypeMap = {
-        "key": extract_via_key
+        "key": extract_via_key,
+        "index": extract_via_index,
+        "sublist": extract_via_sublist,
     }
     
     # Get 'mykey' from ${mykey}. This form is guaranteed, so we'll just 

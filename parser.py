@@ -10,17 +10,17 @@ from copy import deepcopy
 
 def extract_reference_strings(scheme):
     """
-    Extract all references, which are of the form ${{reference}}$, from the scheme.
+    Extract all references, which are of the form ${reference}$, from the scheme.
     A scheme may look like
 
         {
-            "time": ${{['timestamp']}}$,
-            "id": ${{['user_id']}}$
+            "time": ${['timestamp']}$,
+            "id": ${['user_id']}$
         }
 
     Where timestamp and user_id are keys in a JSON result.
     """
-    pattern = "\${{[^}]+}}\$"
+    pattern = "\${[^}]+}\$"
     results = re.findall(pattern, scheme)
     return results
 
@@ -50,7 +50,7 @@ def extract_reference_value_from_json(referenceStr, rawJSON):
     """
     Extract the value of the key represented by reference from the JSON.
     For example, 
-    >>> v = extract_reference_value_from_json("${{['mykey']}}", '{"mykey": "1"}')
+    >>> v = extract_reference_value_from_json("${['mykey']}", '{"mykey": "1"}')
     >>> v
     "1"
     """
@@ -66,9 +66,9 @@ def extract_reference_value_from_json(referenceStr, rawJSON):
         "key": extract_via_key
     }
     
-    # Get 'mykey' from ${{mykey}}. This form is guaranteed, so we'll just 
+    # Get 'mykey' from ${mykey}. This form is guaranteed, so we'll just 
     # hardcode it.
-    reference = referenceStr[3:-3]
+    reference = referenceStr[2:-2]
     data = json.loads(rawJSON)
 
     referenceParts = extract_reference_parts(reference)

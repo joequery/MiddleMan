@@ -1,1 +1,1 @@
-${{['headers']['Host']}}$, ${{['origin']}}$
+${['headers']['Host']}$, ${['origin']}$

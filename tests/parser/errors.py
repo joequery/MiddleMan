@@ -138,9 +138,11 @@ class ReferenceBNFComplexErrors(unittest.TestCase):
         for r in references:
             try:
                 extracted = parser.extract_reference_parts(r)
-                valid.append((r, extracted.getName()))
+                types = []
+                for e in extracted:
+                    types.append(e.getName())
+                valid.append((r, extracted.asList(), types))
             except ParseException:
                 pass
 
         self.assertEqual(valid, [])
-

@@ -30,6 +30,19 @@ class ReferenceHelpers(unittest.TestCase):
         extracted = parser.extract_reference_value_from_json(reference, rawJSON)
         self.assertEqual(expected, extracted)
 
+    def test_extract_simple_key_value_pair_with_filter(self):
+        rawJSON = """
+        {
+            "mykey1": "myvalue1",
+            "timezone": "US/Central"
+        }
+        """
+        reference = '${["mykey1"]|bool}$'
+        expected = "1"
+        extracted = parser.extract_reference_value_from_json(reference, rawJSON)
+        self.assertEqual(expected, extracted)
+
+
 
 class SchemeApplication(unittest.TestCase):
     def test_simple(self):

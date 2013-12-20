@@ -24,6 +24,20 @@ def extract_reference_strings(scheme):
     results = re.findall(pattern, scheme)
     return results
 
+def apply_filter(filter_fn, value):
+    '''
+    Apply a filter function with name `filter_fn` to the value.
+    '''
+    if filter_fn == "bool":
+        # Let's make things easier for the C people and just require them to
+        # check for a "0" or "1" string instead of "True" and "False"
+        return str(int(bool(value)))
+
+    # elifs for more filter functions. We can clean up later if this gets to be
+    # too big.
+    else:
+        raise RuntimeError("Filter function %s not defined" % filter_fn)
+
 def apply_scheme_to_json(scheme, rawJSON):
     """
     Apply a user specified scheme to JSON. The references in the scheme will
@@ -59,7 +73,12 @@ def extract_reference_value_from_json(referenceStr, rawJSON):
     # All helper functions should have two parameters: the reference, and the
     # data
     def extract_via_key(ref, data):
-        return data.get(ref[0])
+        # A ref of length 1 is just the key ex:['mykey']
+        # A ref of length 2 means a filter was specified ex: ['mykey', 'bool']
+        if len(ref) == 1:
+            return data.get(ref[0])
+        else:
+            return apply_filter(ref[1], data.get(ref[0]))
 
     def extract_via_index(ref, data):
         index = int(ref[0])

@@ -47,6 +47,22 @@ class ReferenceBNFExtractionSimple(unittest.TestCase):
         for e in extracted:
             self.assertEqual("key", e.getName())
 
+    def test_single_key_with_filter(self):
+        reference = "['mykey1']|bool"
+        expected = [["mykey1", "bool"]]
+        extracted = parser.extract_reference_parts(reference)
+        self.assertEqual(expected, extracted.asList())
+        for e in extracted:
+            self.assertEqual("key", e.getName())
+
+    def test_multiple_keys_with_filter(self):
+        reference = "['mykey1']['myinnerkey2']|bool"
+        expected = [["mykey1"],["myinnerkey2", "bool"]]
+        extracted = parser.extract_reference_parts(reference)
+        self.assertEqual(expected, extracted.asList())
+        for e in extracted:
+            self.assertEqual("key", e.getName())
+
     """
     Test simple index references
     """

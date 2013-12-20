@@ -160,6 +160,8 @@ def reference_bnf():
     number = Combine(Optional(dash) + Word(nums))
     space = Literal(" ")
     commaSep = (Literal(",") + Optional(space)).suppress()
+    bar = Literal("|").suppress()
+    filter_fn = Combine(bar + words)
 
     # Wrapper functions for readability
     def braces(s):
@@ -175,7 +177,11 @@ def reference_bnf():
         return dblquote + s + dblquote
 
     # Dictionaries: ["some string"]
-    key = Group(brackets(quotes(words)) ^ brackets(dblquotes(words)))
+    # With optional filter function: ["some string"]|bool
+    key = Group(\
+            (brackets(quotes(words)) + Optional(filter_fn)) ^\
+            (brackets(dblquotes(words)) + Optional(filter_fn))\
+            )
 
     # Indexes: [5]
     index = Group(brackets(number))

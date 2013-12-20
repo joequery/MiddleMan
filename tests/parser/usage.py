@@ -89,6 +89,27 @@ class SchemeApplication(unittest.TestCase):
         expected = "httpbin.org, 74.192.112.168"
         self.assertEqual(expected, result)
 
+    def test_httpbin_get_example_with_filters(self):
+        rawJSON = """
+        {
+          "url": "http://httpbin.org/get",
+          "headers": {
+            "Host": "httpbin.org",
+            "Connection": "close",
+            "Accept": "*/*",
+            "User-Agent": "Wget/1.13.4 (linux-gnu)"
+          },
+          "args": {},
+          "origin": "74.192.112.168"
+        }
+        """
+        scheme = "${['headers']['Host']|bool}$, ${['args']|bool}$"
+
+        result = parser.apply_scheme_to_json(scheme, rawJSON).strip()
+        expected = "1, 0"
+        self.assertEqual(expected, result)
+
+
     def test_index_with_simple_list(self):
         rawJSON = '{"key2": [0, 1, 2, 3], "key1": "value1"}'
         scheme = "${['key1']}$${['key2'][2]}$"

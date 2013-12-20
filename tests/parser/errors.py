@@ -105,3 +105,18 @@ class ReferenceBNFErrors(unittest.TestCase):
                 pass
 
         self.assertEqual(valid, [])
+
+    def test_invalid_filter_function(self):
+        rawJSON = """
+        {
+            "mykey1": "myvalue1",
+            "timezone": "US/Central"
+        }
+        """
+        reference = '${["mykey1"]|lolol}$'
+
+        with self.assertRaises(RuntimeError) as e:
+            extracted = parser.extract_reference_value_from_json(reference, rawJSON)
+        expected_err = "Filter function lolol not defined"
+        self.assertEqual(str(e.exception), expected_err)
+

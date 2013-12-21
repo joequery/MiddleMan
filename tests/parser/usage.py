@@ -217,17 +217,45 @@ class FilterTests(unittest.TestCase):
         self.assertEqual(expected, result)
 
 try:
-    from test import api_keys
+    from tests import api_keys
     HAVE_API_KEYS = True
 except ImportError:
     print('''
 To run API tests, you should copy the tests/api_keys.sample
-file to test/api_keys.py, follow the directions to obtain keys, and paste
-in your own keys.''')
+file to tests/api_keys.py, follow the directions to obtain keys, and paste
+in your own keys.
+''')
     HAVE_API_KEYS = False
 
-@unittest.skipIf(not HAVE_API_KEYS, "No test/api_keys.py file detected.")
+@unittest.skipIf(not HAVE_API_KEYS, "No tests/api_keys.py file detected.")
 class RealAPITests(unittest.TestCase):
-    def test_lol(self):
-        self.assertEqual(0,1)
+    def test_forecast_io(self):
+        #################
+        # Build the URL
+        #################
+        api_key = api_keys.FORECAST_IO_KEY
 
+        # latitude/longitude
+        austin_tx = "30.2676,-97.743"
+        url_fmt = "https://api.forecast.io/forecast/%s/%s"
+        url = url_fmt % (api_key, austin_tx)
+
+        ######################
+        # Now query the API
+        ######################
+        request = urllib2.Request(url)
+        response = urllib2.urlopen(request)
+        content = response.read()
+
+        # Extract the lat/long and ensure they match up
+        scheme = "${['latitude']}$,${['longitude']}$"
+        result = parser.apply_scheme_to_json(scheme, content).strip()
+        self.assertEqual(result, austin_tx)
+
+        # Get the current temperature in Fahrenheit
+        scheme = "${['currently']['temperature']}$"
+        result = parser.apply_scheme_to_json(scheme, content).strip()
+        print("The weather in Austin, TX is %s degrees F" % result)
+
+        # This will raise a ValueError if result is not a float
+        float(result)

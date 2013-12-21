@@ -1,0 +1,10 @@
+# Keys for API Testing
+# Note: ALL of the APIs used in these tests contain a free tier.
+
+# ==============================================================================
+# Registering for forecast.io
+# 1. Register at https://developer.forecast.io/register
+# 2. Once you have registered, visit https://developer.forecast.io/
+# 3. Scroll to the bottom of your page, you will see the API KEY there.
+# ==============================================================================
+FORECAST_IO_KEY = ""

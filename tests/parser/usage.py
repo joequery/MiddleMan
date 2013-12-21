@@ -216,3 +216,18 @@ class FilterTests(unittest.TestCase):
         expected = "9, 0, 4"
         self.assertEqual(expected, result)
 
+try:
+    from test import api_keys
+    HAVE_API_KEYS = True
+except ImportError:
+    print('''
+To run API tests, you should copy the tests/api_keys.sample
+file to test/api_keys.py, follow the directions to obtain keys, and paste
+in your own keys.''')
+    HAVE_API_KEYS = False
+
+@unittest.skipIf(not HAVE_API_KEYS, "No test/api_keys.py file detected.")
+class RealAPITests(unittest.TestCase):
+    def test_lol(self):
+        self.assertEqual(0,1)
+

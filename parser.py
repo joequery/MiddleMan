@@ -60,6 +60,7 @@ def apply_scheme_to_json(scheme, rawJSON):
 
     for referenceString, value in referenceData:
         scheme = scheme.replace(referenceString, value)
+    scheme = scheme.strip()
     return scheme
 
 def extract_reference_value_from_json(referenceStr, rawJSON):

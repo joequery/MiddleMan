@@ -86,7 +86,7 @@ class SchemeApplication(unittest.TestCase):
         """
         scheme = "${['headers']['Host']}$, ${['origin']}$"
 
-        result = parser.apply_scheme_to_json(scheme, rawJSON).strip()
+        result = parser.apply_scheme_to_json(scheme, rawJSON)
         expected = "httpbin.org, 74.192.112.168"
         self.assertEqual(expected, result)
 
@@ -198,7 +198,7 @@ class FilterTests(unittest.TestCase):
         """
         scheme = "${['headers']['Host']|bool}$, ${['args']|bool}$"
 
-        result = parser.apply_scheme_to_json(scheme, rawJSON).strip()
+        result = parser.apply_scheme_to_json(scheme, rawJSON)
         expected = "1, 0"
         self.assertEqual(expected, result)
 
@@ -212,7 +212,7 @@ class FilterTests(unittest.TestCase):
         """
         scheme = "${['numbers']|len}$, ${['emptydict']|len}$, ${['peoplelist']|len}$"
 
-        result = parser.apply_scheme_to_json(scheme, rawJSON).strip()
+        result = parser.apply_scheme_to_json(scheme, rawJSON)
         expected = "9, 0, 4"
         self.assertEqual(expected, result)
 
@@ -249,12 +249,12 @@ class RealAPITests(unittest.TestCase):
 
         # Extract the lat/long and ensure they match up
         scheme = "${['latitude']}$,${['longitude']}$"
-        result = parser.apply_scheme_to_json(scheme, content).strip()
+        result = parser.apply_scheme_to_json(scheme, content)
         self.assertEqual(result, austin_tx)
 
         # Get the current temperature in Fahrenheit
         scheme = "${['currently']['temperature']}$"
-        result = parser.apply_scheme_to_json(scheme, content).strip()
+        result = parser.apply_scheme_to_json(scheme, content)
         print("The weather in Austin, TX is %s degrees F" % result)
 
         # This will raise a ValueError if result is not a float

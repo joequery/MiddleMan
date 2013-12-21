@@ -23,6 +23,14 @@ class ReferenceBNFExtractionSimple(unittest.TestCase):
         for e in extracted:
             self.assertEqual("key", e.getName())
 
+    def test_key_with_underscores(self):
+        reference = "['my_key1']"
+        expected = [["my_key1"]]
+        extracted = parser.extract_reference_parts(reference)
+        self.assertEqual(expected, extracted.asList())
+        for e in extracted:
+            self.assertEqual("key", e.getName())
+
     def test_multiple_keys_single_quotes(self):
         reference = "['mykey1']['myinnerkey2']"
         expected = [["mykey1"], ["myinnerkey2"]]

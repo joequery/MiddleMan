@@ -35,6 +35,8 @@ def apply_filter(filter_fn, value):
 
     # elifs for more filter functions. We can clean up later if this gets to be
     # too big.
+    elif filter_fn == "len":
+        return str(len(value))
     else:
         raise RuntimeError("Filter function %s not defined" % filter_fn)
 
@@ -175,7 +177,7 @@ def reference_bnf():
     rbrace = Literal("}").suppress()
     dash = Literal("-")
     colon = Literal(":")
-    words = OneOrMore(Word(alphanums))
+    words = OneOrMore(Word(alphanums + "_-"))
     number = Combine(Optional(dash) + Word(nums))
     space = Literal(" ")
     commaSep = (Literal(",") + Optional(space)).suppress()

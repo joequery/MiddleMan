@@ -4,6 +4,7 @@ import unittest
 from tests.testhelpers import testfile
 import parser
 import json
+import urllib2
 
 class ReferenceHelpers(unittest.TestCase):
     def test_extract_references_simple(self):
@@ -87,26 +88,6 @@ class SchemeApplication(unittest.TestCase):
 
         result = parser.apply_scheme_to_json(scheme, rawJSON).strip()
         expected = "httpbin.org, 74.192.112.168"
-        self.assertEqual(expected, result)
-
-    def test_httpbin_get_example_with_filters(self):
-        rawJSON = """
-        {
-          "url": "http://httpbin.org/get",
-          "headers": {
-            "Host": "httpbin.org",
-            "Connection": "close",
-            "Accept": "*/*",
-            "User-Agent": "Wget/1.13.4 (linux-gnu)"
-          },
-          "args": {},
-          "origin": "74.192.112.168"
-        }
-        """
-        scheme = "${['headers']['Host']|bool}$, ${['args']|bool}$"
-
-        result = parser.apply_scheme_to_json(scheme, rawJSON).strip()
-        expected = "1, 0"
         self.assertEqual(expected, result)
 
 
@@ -199,3 +180,39 @@ class SchemeApplication(unittest.TestCase):
         resultStr = parser.apply_scheme_to_json(scheme, rawJSON)
         expected = "21"
         self.assertEqual(expected, resultStr)
+
+class FilterTests(unittest.TestCase):
+    def test_bool_filter(self):
+        rawJSON = """
+        {
+          "url": "http://httpbin.org/get",
+          "headers": {
+            "Host": "httpbin.org",
+            "Connection": "close",
+            "Accept": "*/*",
+            "User-Agent": "Wget/1.13.4 (linux-gnu)"
+          },
+          "args": {},
+          "origin": "74.192.112.168"
+        }
+        """
+        scheme = "${['headers']['Host']|bool}$, ${['args']|bool}$"
+
+        result = parser.apply_scheme_to_json(scheme, rawJSON).strip()
+        expected = "1, 0"
+        self.assertEqual(expected, result)
+
+    def test_len_filter(self):
+        rawJSON = """
+        {
+          "numbers": "123456789",
+          "emptydict": {},
+          "peoplelist": ["Joseph", "Luke", "Trevor", "Dave"]
+        }
+        """
+        scheme = "${['numbers']|len}$, ${['emptydict']|len}$, ${['peoplelist']|len}$"
+
+        result = parser.apply_scheme_to_json(scheme, rawJSON).strip()
+        expected = "9, 0, 4"
+        self.assertEqual(expected, result)
+

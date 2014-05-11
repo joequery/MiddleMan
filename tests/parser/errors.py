@@ -8,6 +8,22 @@ from mmlib.jsonparser import(
     extract_reference_parts, extract_reference_value_from_json
 )
 
+###################################
+# Begin new, specific error tests
+###################################
+class MalformedKeyTests(unittest.TestCase):
+
+    def test_nested_key(self):
+        with self.assertRaises(ParseException) as e:
+            ref = "[['hello']]"
+            extract_reference_parts(ref)
+
+        expected_err = "Error parsing [['hello']]: ' expected at index 2 (after '[')"
+        self.assertEqual(str(e.exception.msg), expected_err)
+
+##############
+# OLD TESTS
+##############
 class ReferenceBNFErrors(unittest.TestCase):
     def test_malformed_keys(self):
         badreferences = []

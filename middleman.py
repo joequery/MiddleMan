@@ -26,7 +26,7 @@ def process():
     try:
         result = apply_scheme_to_json(post['scheme'], post['rawjson'])
     except ParseException, e:
-        return jsonify(errors={'parse_errors': [str(e)]})
+        return jsonify(errors={'parse_errors': [e.msg]})
 
     return jsonify(result=result)
 

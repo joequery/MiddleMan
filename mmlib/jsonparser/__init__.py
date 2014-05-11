@@ -9,6 +9,7 @@ from pyparsing import (
 )
 
 from mm_filters import FILTER_MAPPING
+from mm_parsererrors import parse_error_msg
 from copy import deepcopy
 
 def extract_reference_strings(scheme):
@@ -147,18 +148,14 @@ def extract_reference_value_from_json(referenceStr, rawJSON):
 
 def extract_reference_parts(reference):
     referenceGrammar = reference_bnf()
-    # Provide better error messages than the defalts:
     try:
         parsed = referenceGrammar.parseString(reference)
     except ParseException, e:
-        import ipdb; ipdb.set_trace();
-        err_str = process_parse_exception(str(e))
-        raise ParseException(err_str)
+        # Improve the error message, then reraise.
+        e.msg = parse_error_msg(e)
+        raise
 
     return parsed
-
-def process_parse_exception(e):
-    return e
 
 def reference_bnf():
     """

@@ -15,13 +15,29 @@ def _char_expected(e):
 
     return err_msg
 
+def _string_end(e):
+    problem_char = e.pstr[e.loc]
+    if problem_char in "[{":
+        err_msg = "unmatched %s at index %s" % (problem_char, e.loc)
+
+    return err_msg
 
 def parse_error_msg(e):
     orig_msg = e.msg
+    err_msg = orig_msg
+    orig_msg_lower = orig_msg.lower()
     full_err = 'Error parsing %s: ' % e.pstr
 
-    if 'expected' in orig_msg.lower():
-        err_msg = _char_expected(e)
+    # Don't let our bad attempts to display an error message crash the program
+    # entirely.
+    try:
+        if 'expected' in orig_msg_lower:
+            if 'stringend' in orig_msg_lower:
+                err_msg = _string_end(e)
+            else:
+                err_msg = _char_expected(e)
+    except Exception:
+        err_msg = orig_msg
 
     full_err += err_msg
     return full_err

@@ -21,6 +21,22 @@ class MalformedKeyTests(unittest.TestCase):
         expected_err = "Error parsing [['hello']]: ' expected at index 2 (after '[')"
         self.assertEqual(str(e.exception.msg), expected_err)
 
+    def test_unclosed_key_no_keystr(self):
+        with self.assertRaises(ParseException) as e:
+            ref = "['hello']["
+            extract_reference_parts(ref)
+
+        expected_err = "Error parsing ['hello'][: unmatched [ at index 9"
+        self.assertEqual(str(e.exception.msg), expected_err)
+
+    def test_unclosed_key_with_keystr(self):
+        with self.assertRaises(ParseException) as e:
+            ref = "['hello']['there'"
+            extract_reference_parts(ref)
+
+        expected_err = "Error parsing ['hello']['there': unmatched [ at index 9"
+        self.assertEqual(str(e.exception.msg), expected_err)
+
 ##############
 # OLD TESTS
 ##############

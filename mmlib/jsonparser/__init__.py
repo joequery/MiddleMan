@@ -152,8 +152,8 @@ def extract_reference_parts(reference):
         parsed = referenceGrammar.parseString(reference)
     except ParseException, e:
         # Improve the error message, then reraise.
-        e.msg = parse_error_msg(e)
-        raise
+        err_msg = parse_error_msg(e)
+        raise ParseException(e.pstr,e.loc,err_msg,e.parserElement)
 
     return parsed
 

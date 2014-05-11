@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>MiddleMan JSON service</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link href="{{url_for('static', filename='css/bootstrap.min.css')}}" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+      }
+
+      h1 {
+        margin-bottom: 40px;
+      }
+    </style>
+  </head>
+
+  <body>
+
+
+    <div class="container-fluid">
+
+        <div class="navbar navbar-inverse navbar-fixed-top">
+          <div class="navbar-inner">
+            <div class="container pull-left">
+              <a class="brand" href="#">MiddleMan JSON service</a>
+            </div>
+          </div>
+        </div>
+
+        <h1>MiddleMan JSON service</h1>
+
+        <div class="row-fluid">
+            <form method="POST" action="/" class="">
+                <div class="row">
+                    <div class="pull-left span6">
+                        <div class="control-group">
+                            <label class="control-label" for="jsonresponse">JSON Response</label>
+                            <div class="controls">
+                                <textarea class="row-fluid" rows="25" id="jsonresponse" name="jsonresponse"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pull-left span6">
+                        <div class="control-group">
+                            <label class="control-label" for="scheme">Middleman Scheme</label>
+                            <div class="controls">
+                                <textarea class="row-fluid" rows="25" id="scheme" name="scheme"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="control-group">
+                        <div class="controls">
+                            <input type="submit" value="Submit">
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+
+    </div> <!-- /container -->
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+  </body>
+</html>
+

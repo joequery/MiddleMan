@@ -2,7 +2,10 @@
 # for substituting JSON values
 import unittest
 from tests.testhelpers import testfile
-import parser
+from jsonparser import(
+    extract_reference_strings, extract_reference_value_from_json,
+    apply_scheme_to_json
+)
 import json
 import urllib2
 
@@ -15,7 +18,7 @@ class ReferenceHelpers(unittest.TestCase):
             "time": "${['timezone']}$"
         }
         """
-        references = parser.extract_reference_strings(scheme)
+        references = extract_reference_strings(scheme)
         expected = ["${['mykey1']}$", "${['timezone']}$"]
         self.assertListEqual(expected, references)
 
@@ -28,7 +31,7 @@ class ReferenceHelpers(unittest.TestCase):
         """
         reference = '${["mykey1"]}$'
         expected = "myvalue1"
-        extracted = parser.extract_reference_value_from_json(reference, rawJSON)
+        extracted = extract_reference_value_from_json(reference, rawJSON)
         self.assertEqual(expected, extracted)
 
     def test_extract_simple_key_value_pair_with_filter(self):
@@ -40,7 +43,7 @@ class ReferenceHelpers(unittest.TestCase):
         """
         reference = '${["mykey1"]|bool}$'
         expected = "1"
-        extracted = parser.extract_reference_value_from_json(reference, rawJSON)
+        extracted = extract_reference_value_from_json(reference, rawJSON)
         self.assertEqual(expected, extracted)
 
 
@@ -61,7 +64,7 @@ class SchemeApplication(unittest.TestCase):
         }
         """
 
-        jsonAfterApplication = parser.apply_scheme_to_json(scheme, rawJSON)
+        jsonAfterApplication = apply_scheme_to_json(scheme, rawJSON)
         js = json.loads(jsonAfterApplication)
         expected = {
             "key1": "myvalue1", 
@@ -86,7 +89,7 @@ class SchemeApplication(unittest.TestCase):
         """
         scheme = "${['headers']['Host']}$, ${['origin']}$"
 
-        result = parser.apply_scheme_to_json(scheme, rawJSON)
+        result = apply_scheme_to_json(scheme, rawJSON)
         expected = "httpbin.org, 74.192.112.168"
         self.assertEqual(expected, result)
 
@@ -94,46 +97,46 @@ class SchemeApplication(unittest.TestCase):
     def test_index_with_simple_list(self):
         rawJSON = '{"key2": [0, 1, 2, 3], "key1": "value1"}'
         scheme = "${['key1']}$${['key2'][2]}$"
-        result = parser.apply_scheme_to_json(scheme, rawJSON)
+        result = apply_scheme_to_json(scheme, rawJSON)
         expected = "value12"
         self.assertEqual(expected, result)
 
         scheme = "${['key1']}$${['key2'][-1]}$"
-        result = parser.apply_scheme_to_json(scheme, rawJSON)
+        result = apply_scheme_to_json(scheme, rawJSON)
         expected = "value13"
         self.assertEqual(expected, result)
 
     def test_sublist_with_simple_list(self):
         rawJSON = '{"key2": [0, 1, 2, 3], "key1": "value1"}'
         scheme = '{"numbers": ${["key2"][1:3]}$}'
-        result = parser.apply_scheme_to_json(scheme, rawJSON)
+        result = apply_scheme_to_json(scheme, rawJSON)
         expected = '{"numbers": [1, 2]}'
         self.assertEqual(expected, result)
 
         scheme = '{"numbers": ${["key2"][1:]}$}'
-        result = parser.apply_scheme_to_json(scheme, rawJSON)
+        result = apply_scheme_to_json(scheme, rawJSON)
         expected = '{"numbers": [1, 2, 3]}'
         self.assertEqual(expected, result)
 
         scheme = '{"numbers": ${["key2"][:-1]}$}'
-        result = parser.apply_scheme_to_json(scheme, rawJSON)
+        result = apply_scheme_to_json(scheme, rawJSON)
         expected = '{"numbers": [0, 1, 2]}'
         self.assertEqual(expected, result)
 
         scheme = '{"numbers": ${["key2"][:]}$}'
-        result = parser.apply_scheme_to_json(scheme, rawJSON)
+        result = apply_scheme_to_json(scheme, rawJSON)
         expected = '{"numbers": [0, 1, 2, 3]}'
         self.assertEqual(expected, result)
 
         scheme = '{"numbers": ${["key2"]}$}'
-        result = parser.apply_scheme_to_json(scheme, rawJSON)
+        result = apply_scheme_to_json(scheme, rawJSON)
         expected = '{"numbers": [0, 1, 2, 3]}'
         self.assertEqual(expected, result)
 
     def test_subdict_with_simple_dict(self):
         rawJSON = '{"mykey": {"inner2": 2, "inner3": 3, "inner1": 1}}'
         scheme = '${["mykey"]{"inner1","inner3"}}$'
-        resultStr = parser.apply_scheme_to_json(scheme, rawJSON)
+        resultStr = apply_scheme_to_json(scheme, rawJSON)
         result = json.loads(resultStr)
         expected = {
             "inner1":1,
@@ -152,7 +155,7 @@ class SchemeApplication(unittest.TestCase):
         }
         """
         scheme = '${["key1"]{"inner1","inner3"}}$'
-        resultStr = parser.apply_scheme_to_json(scheme, rawJSON)
+        resultStr = apply_scheme_to_json(scheme, rawJSON)
         result = json.loads(resultStr)
         expected = [
             {"inner1":11, "inner3":13},
@@ -162,7 +165,7 @@ class SchemeApplication(unittest.TestCase):
         self.assertListEqual(expected, result)
 
         scheme = '${["key1"][1:]{"inner1","inner3"}}$'
-        resultStr = parser.apply_scheme_to_json(scheme, rawJSON)
+        resultStr = apply_scheme_to_json(scheme, rawJSON)
         result = json.loads(resultStr)
         expected = [
             {"inner1":21, "inner3":23},
@@ -171,13 +174,13 @@ class SchemeApplication(unittest.TestCase):
         self.assertListEqual(expected, result)
 
         scheme = '${["key1"][-1]{"inner1","inner3"}}$'
-        resultStr = parser.apply_scheme_to_json(scheme, rawJSON)
+        resultStr = apply_scheme_to_json(scheme, rawJSON)
         result = json.loads(resultStr)
         expected = {"inner1":31, "inner3":33}
         self.assertDictEqual(expected, result)
 
         scheme = '${["key1"][1:]{"inner1","inner3"}[0]["inner1"]}$'
-        resultStr = parser.apply_scheme_to_json(scheme, rawJSON)
+        resultStr = apply_scheme_to_json(scheme, rawJSON)
         expected = "21"
         self.assertEqual(expected, resultStr)
 
@@ -198,7 +201,7 @@ class FilterTests(unittest.TestCase):
         """
         scheme = "${['headers']['Host']|bool}$, ${['args']|bool}$"
 
-        result = parser.apply_scheme_to_json(scheme, rawJSON)
+        result = apply_scheme_to_json(scheme, rawJSON)
         expected = "1, 0"
         self.assertEqual(expected, result)
 
@@ -212,7 +215,7 @@ class FilterTests(unittest.TestCase):
         """
         scheme = "${['numbers']|len}$, ${['emptydict']|len}$, ${['peoplelist']|len}$"
 
-        result = parser.apply_scheme_to_json(scheme, rawJSON)
+        result = apply_scheme_to_json(scheme, rawJSON)
         expected = "9, 0, 4"
         self.assertEqual(expected, result)
 
@@ -249,12 +252,12 @@ class RealAPITests(unittest.TestCase):
 
         # Extract the lat/long and ensure they match up
         scheme = "${['latitude']}$,${['longitude']}$"
-        result = parser.apply_scheme_to_json(scheme, content)
+        result = apply_scheme_to_json(scheme, content)
         self.assertEqual(result, austin_tx)
 
         # Get the current temperature in Fahrenheit
         scheme = "${['currently']['temperature']}$"
-        result = parser.apply_scheme_to_json(scheme, content)
+        result = apply_scheme_to_json(scheme, content)
         print("The weather in Austin, TX is %s degrees F" % result)
 
         # This will raise a ValueError if result is not a float

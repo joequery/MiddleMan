@@ -4,7 +4,9 @@ import unittest
 from tests.testhelpers import testfile
 
 from pyparsing import ParseException
-import parser
+from jsonparser import(
+    extract_reference_parts, extract_reference_value_from_json
+)
 
 class ReferenceBNFErrors(unittest.TestCase):
     def test_malformed_keys(self):
@@ -15,7 +17,7 @@ class ReferenceBNFErrors(unittest.TestCase):
         badreferences.append("['hello']['hello']]")
         for r in badreferences:
             try:
-                extracted = parser.extract_reference_parts(r)
+                extracted = extract_reference_parts(r)
                 types = []
                 for e in extracted:
                     types.append(e.getName())
@@ -34,7 +36,7 @@ class ReferenceBNFErrors(unittest.TestCase):
         badreferences.append("[+1]")
         for r in badreferences:
             try:
-                extracted = parser.extract_reference_parts(r)
+                extracted = extract_reference_parts(r)
                 types = []
                 for e in extracted:
                     types.append(e.getName())
@@ -53,7 +55,7 @@ class ReferenceBNFErrors(unittest.TestCase):
         badreferences.append("1:-1]")
         for r in badreferences:
             try:
-                extracted = parser.extract_reference_parts(r)
+                extracted = extract_reference_parts(r)
                 types = []
                 for e in extracted:
                     types.append(e.getName())
@@ -73,7 +75,7 @@ class ReferenceBNFErrors(unittest.TestCase):
         badreferences.append("{,'mykey'}")
         for r in badreferences:
             try:
-                extracted = parser.extract_reference_parts(r)
+                extracted = extract_reference_parts(r)
                 types = []
                 for e in extracted:
                     types.append(e.getName())
@@ -96,7 +98,7 @@ class ReferenceBNFErrors(unittest.TestCase):
         badreferences.append("['test'][-1]{'key1', 'key2'[5:10]")
         for r in badreferences:
             try:
-                extracted = parser.extract_reference_parts(r)
+                extracted = extract_reference_parts(r)
                 types = []
                 for e in extracted:
                     types.append(e.getName())
@@ -116,7 +118,7 @@ class ReferenceBNFErrors(unittest.TestCase):
         reference = '${["mykey1"]|lolol}$'
 
         with self.assertRaises(RuntimeError) as e:
-            extracted = parser.extract_reference_value_from_json(reference, rawJSON)
+            extracted = extract_reference_value_from_json(reference, rawJSON)
         expected_err = "Filter function lolol not defined"
         self.assertEqual(str(e.exception), expected_err)
 

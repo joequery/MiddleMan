@@ -34,6 +34,13 @@
 
         <h1>MiddleMan JSON service</h1>
 
+        <div class="row">
+            <p>
+              <button id="get_example" class="btn btn-primary"
+                  type="button">Click to see example data</button>
+            </p>
+        </div>
+
         <div class="row-fluid">
             <form id="mm_form" method="POST" action="/process" class="">
                 <div class="row">
@@ -41,7 +48,7 @@
                         <div class="control-group">
                             <label class="control-label" for="rawjson">Raw JSON Response</label>
                             <div class="controls">
-                                <textarea class="row-fluid" rows="25" id="rawjson" name="rawjson"></textarea>
+                                <textarea class="row-fluid" rows="20" id="rawjson" name="rawjson"></textarea>
                             </div>
                         </div>
                     </div>
@@ -49,7 +56,7 @@
                         <div class="control-group">
                             <label class="control-label" for="scheme">Middleman Scheme</label>
                             <div class="controls">
-                                <textarea class="row-fluid" rows="25" id="scheme" name="scheme"></textarea>
+                                <textarea class="row-fluid" rows="20" id="scheme" name="scheme"></textarea>
                             </div>
                         </div>
                     </div>
@@ -58,7 +65,7 @@
                 <div class="row">
                     <div class="control-group">
                         <div class="controls">
-                            <input type="submit" value="Submit">
+                            <input class="btn btn-success" type="submit" value="Submit">
                         </div>
                     </div>
                 </div>
@@ -73,6 +80,10 @@
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <div class=row">
+                <p>View the <a href="https://github.com/joequery/MiddleMan/tree/init_dev">source code</a> on github</p>
             </div>
         </div>
 

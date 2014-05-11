@@ -30,5 +30,22 @@ def process():
 
     return jsonify(result=result)
 
+@app.route('/sampledata', methods=['GET'])
+def sample_data():
+    rawjson = """
+    {
+        "name": "Joe McCullough",
+        "GPA": 3,
+        "nickname": "JoeQuery",
+        "likes_cats": true,
+        "likes_baseball": 0,
+        "favorite_foods": ["tacos", "ramen", "burgers"]
+    }
+    """.strip()
+
+    scheme = """The name is ${['name']}$, but you can call me ${['nickname']|dquote}$. I had a GPA of ${['GPA']|to_f}$ in college. In a binary sense, the answer to the question "Do I like cats?" is ${['likes_cats']|boolint}$. In a boolean sense, do I like baseball? ${['likes_baseball']|bool}$. I'd totally be down for some ${['favorite_foods'][1]}$ right now. """
+
+    return jsonify(rawjson=rawjson, scheme=scheme)
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)

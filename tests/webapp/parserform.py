@@ -31,14 +31,14 @@ class ParseFormTests(MMTestCase):
         post_data_missing_json = {'scheme': self.scheme}
         resp = self.client.post('/process', data=post_data_missing_json)
         resp_data = json.loads(resp.data)
-        self.assertEqual(resp_data['errors'], {u'missing': [u'rawjson']})
+        self.assertEqual(resp_data['errors']['missing'], [u'rawjson'])
 
         post_data_missing_scheme = {'rawjson': self.rawJSON}
         resp = self.client.post('/process', data=post_data_missing_scheme)
         resp_data = json.loads(resp.data)
-        self.assertEqual(resp_data['errors'], {u'missing': [u'scheme']})
+        self.assertEqual(resp_data['errors']['missing'], [u'scheme'])
 
         empty_data = {}
         resp = self.client.post('/process', data=empty_data)
         resp_data = json.loads(resp.data)
-        self.assertEqual(resp_data['errors'], {u'missing': [u'scheme', u'rawjson']})
+        self.assertEqual(resp_data['errors']['missing'], [u'scheme', u'rawjson'])

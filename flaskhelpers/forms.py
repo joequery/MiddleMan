@@ -14,15 +14,13 @@ def extract_post_data(request, required_fields):
         >>> return render_template("home.html", data=data)
     '''
     errors = {}
-    data = False
     form = request.form
-    provided_fields = form.keys()
-    missing_fields = [x for x in required_fields if x not in provided_fields]
+    missing_fields = [x for x in required_fields if form.get(x) in [None, ""]]
 
     if missing_fields:
         errors['missing'] = missing_fields
-        return (data, errors)
+        errors['message'] = "Fields are missing: %s" % ", ".join(missing_fields)
+        return (False, errors)
 
-    data = dict([(k,form[k]) for k in provided_fields])
-    return (data, errors)
+    return (form, errors)
 

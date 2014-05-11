@@ -35,7 +35,7 @@
         <h1>MiddleMan JSON service</h1>
 
         <div class="row-fluid">
-            <form method="POST" action="/process" class="">
+            <form id="mm_form" method="POST" action="/process" class="">
                 <div class="row">
                     <div class="pull-left span6">
                         <div class="control-group">
@@ -79,9 +79,8 @@
 
     </div> <!-- /container -->
 
-    <!-- Le javascript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="{{url_for('static', filename='js/middleman.js')}}"></script>
 
   </body>
 </html>

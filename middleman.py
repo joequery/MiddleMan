@@ -20,7 +20,9 @@ def process():
     required_fields = ('scheme', 'rawjson')
     post,errors = extract_post_data(request, required_fields)
 
-    resp_data = {}
+    if errors:
+        resp_data = {'errors': errors}
+        return jsonify(**resp_data)
 
     try:
         result = apply_scheme_to_json(post['scheme'], post['rawjson'])

@@ -21,18 +21,14 @@ def process():
     post,errors = extract_post_data(request, required_fields)
 
     if errors:
-        resp_data = {'errors': errors}
-        return jsonify(**resp_data)
+        return jsonify(errors=errors)
 
     try:
         result = apply_scheme_to_json(post['scheme'], post['rawjson'])
     except ParseException, e:
-        errors = {'parse_errors': [str(e)]}
+        return jsonify(errors={'parse_errors': [str(e)]})
 
-    if not errors:
-        resp_data['result'] = result
-
-    return jsonify(**resp_data)
+    return jsonify(result=result)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)

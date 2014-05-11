@@ -18,7 +18,9 @@ class MMTestCase(unittest.TestCase):
     '''
 
     def setUp(self):
-        self.client = middleman.app.test_client()
+        app = middleman.app
+        app.debug = True
+        self.client = app.test_client()
         self.extra_setup()
 
     def extra_setup(self):

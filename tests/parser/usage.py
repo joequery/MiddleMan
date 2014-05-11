@@ -2,7 +2,7 @@
 # for substituting JSON values
 import unittest
 from tests.testhelpers import testfile
-from jsonparser import(
+from mmlib.jsonparser import(
     extract_reference_strings, extract_reference_value_from_json,
     apply_scheme_to_json
 )

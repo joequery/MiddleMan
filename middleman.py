@@ -6,8 +6,8 @@ from pyparsing import ParseException
 
 import datetime
 
-from jsonparser import apply_scheme_to_json
-from flaskhelpers.forms import extract_post_data
+from mmlib.jsonparser import apply_scheme_to_json
+from mmlib.flaskhelpers.forms import extract_post_data
 
 app = Flask(__name__)
 

@@ -1,7 +1,7 @@
 # Tests that demonstrate proper references.
 import unittest
 from tests.testhelpers import testfile
-from jsonparser import(
+from mmlib.jsonparser import(
     extract_reference_parts
 )
 

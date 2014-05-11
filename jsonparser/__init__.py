@@ -6,6 +6,8 @@ from pyparsing import (
     Literal, alphas, nums, alphanums, OneOrMore, Word, 
     ZeroOrMore, Forward, oneOf, Group, Optional, Combine, stringEnd
 )
+
+from mm_filters import FILTER_MAPPING
 from copy import deepcopy
 
 def extract_reference_strings(scheme):
@@ -24,21 +26,12 @@ def extract_reference_strings(scheme):
     results = re.findall(pattern, scheme)
     return results
 
-def apply_filter(filter_fn, value):
-    '''
-    Apply a filter function with name `filter_fn` to the value.
-    '''
-    if filter_fn == "bool":
-        # Let's make things easier for the C people and just require them to
-        # check for a "0" or "1" string instead of "True" and "False"
-        return str(int(bool(value)))
-
-    # elifs for more filter functions. We can clean up later if this gets to be
-    # too big.
-    elif filter_fn == "len":
-        return str(len(value))
+def apply_filter(filter_name, value):
+    filter_fn = FILTER_MAPPING.get(filter_name)
+    if filter_fn is None:
+        raise RuntimeError("Filter function %s not defined" % filter_name)
     else:
-        raise RuntimeError("Filter function %s not defined" % filter_fn)
+        return filter_fn(value)
 
 def apply_scheme_to_json(scheme, rawJSON):
     """

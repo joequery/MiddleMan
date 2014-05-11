@@ -42,7 +42,7 @@ class ReferenceHelpers(unittest.TestCase):
         }
         """
         reference = '${["mykey1"]|bool}$'
-        expected = "1"
+        expected = "true"
         extracted = extract_reference_value_from_json(reference, rawJSON)
         self.assertEqual(expected, extracted)
 
@@ -202,6 +202,26 @@ class FilterTests(unittest.TestCase):
         scheme = "${['headers']['Host']|bool}$, ${['args']|bool}$"
 
         result = apply_scheme_to_json(scheme, rawJSON)
+        expected = "true, false"
+        self.assertEqual(expected, result)
+
+    def test_boolint_filter(self):
+        rawJSON = """
+        {
+          "url": "http://httpbin.org/get",
+          "headers": {
+            "Host": "httpbin.org",
+            "Connection": "close",
+            "Accept": "*/*",
+            "User-Agent": "Wget/1.13.4 (linux-gnu)"
+          },
+          "args": {},
+          "origin": "74.192.112.168"
+        }
+        """
+        scheme = "${['headers']['Host']|boolint}$, ${['args']|boolint}$"
+
+        result = apply_scheme_to_json(scheme, rawJSON)
         expected = "1, 0"
         self.assertEqual(expected, result)
 
@@ -217,6 +237,52 @@ class FilterTests(unittest.TestCase):
 
         result = apply_scheme_to_json(scheme, rawJSON)
         expected = "9, 0, 4"
+        self.assertEqual(expected, result)
+
+    def test_to_i_filter(self):
+        rawJSON = """
+        {
+          "city": "Austin",
+          "temperature": 76.6
+        }
+        """
+        scheme = "${['temperature']|to_i}$"
+        result = apply_scheme_to_json(scheme, rawJSON)
+        expected = "76"
+        self.assertEqual(expected, result)
+
+    def test_to_f_filter(self):
+        rawJSON = """
+        {
+          "name": "Joseph",
+          "average": 85
+        }
+        """
+        scheme = "${['average']|to_f}$"
+        result = apply_scheme_to_json(scheme, rawJSON)
+        expected = "85.0"
+        self.assertEqual(expected, result)
+
+    def test_dquote_filter(self):
+        rawJSON = """
+        {
+          "favorite_number": 7
+        }
+        """
+        scheme = "${['favorite_number']|dquote}$"
+        result = apply_scheme_to_json(scheme, rawJSON)
+        expected = "\"7\""
+        self.assertEqual(expected, result)
+
+    def test_squote_filter(self):
+        rawJSON = """
+        {
+          "favorite_number": 7
+        }
+        """
+        scheme = "${['favorite_number']|squote}$"
+        result = apply_scheme_to_json(scheme, rawJSON)
+        expected = "'7'"
         self.assertEqual(expected, result)
 
 try:

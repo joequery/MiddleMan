@@ -3,8 +3,9 @@
 import json
 import re
 from pyparsing import (
-    Literal, alphas, nums, alphanums, OneOrMore, Word, 
-    ZeroOrMore, Forward, oneOf, Group, Optional, Combine, stringEnd
+    Literal, alphas, nums, alphanums, OneOrMore, Word,
+    ZeroOrMore, Forward, oneOf, Group, Optional, Combine, stringEnd,
+    ParseException, ParseSyntaxException
 )
 
 from mm_filters import FILTER_MAPPING
@@ -146,8 +147,18 @@ def extract_reference_value_from_json(referenceStr, rawJSON):
 
 def extract_reference_parts(reference):
     referenceGrammar = reference_bnf()
-    parsed = referenceGrammar.parseString(reference)
+    # Provide better error messages than the defalts:
+    try:
+        parsed = referenceGrammar.parseString(reference)
+    except ParseException, e:
+        import ipdb; ipdb.set_trace();
+        err_str = process_parse_exception(str(e))
+        raise ParseException(err_str)
+
     return parsed
+
+def process_parse_exception(e):
+    return e
 
 def reference_bnf():
     """

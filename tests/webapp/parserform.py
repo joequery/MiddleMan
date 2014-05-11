@@ -42,3 +42,11 @@ class ParseFormTests(MMTestCase):
         resp = self.client.post('/process', data=empty_data)
         resp_data = json.loads(resp.data)
         self.assertEqual(resp_data['errors']['missing'], [u'scheme', u'rawjson'])
+
+    def test_invalid_scheme(self):
+        # Missing closing brace
+        bad_scheme = "${['headers']['Host'}$, ${['origin']}$"
+        post_data = {'rawjson': self.rawJSON, 'scheme': bad_scheme}
+        resp = self.client.post('/process', data=post_data)
+        resp_data = json.loads(resp.data)
+        print(resp_data)

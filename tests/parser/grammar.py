@@ -1,9 +1,31 @@
 # Tests that demonstrate proper references.
 import unittest
 from tests.testhelpers import testfile
-from mmlib.jsonparser import(
-    extract_reference_parts
-)
+from mmlib.jsonparser import extract_reference_parts
+from mmlib.jsonparser.mm_parsererrors import has_balanced_tokens
+
+class ParserHelperTests(unittest.TestCase):
+    def test_has_balanced_tokens(self):
+        test_str = "()"
+        self.assertTrue(has_balanced_tokens("(", ")", test_str))
+
+        test_str = "[]"
+        self.assertTrue(has_balanced_tokens("[", "]", test_str))
+
+        test_str = "[[]"
+        self.assertFalse(has_balanced_tokens("[", "]", test_str))
+
+        test_str = "[[]]"
+        self.assertTrue(has_balanced_tokens("[", "]", test_str))
+
+        test_str = "['[']]"
+        self.assertFalse(has_balanced_tokens("[", "]", test_str))
+
+        test_str = "{'key1', 'key2',}"
+        self.assertTrue(has_balanced_tokens("{", "}", test_str))
+
+        test_str = "['hello']]"
+        self.assertFalse(has_balanced_tokens("[", "]", test_str))
 
 class ReferenceBNFExtractionSimple(unittest.TestCase):
     """

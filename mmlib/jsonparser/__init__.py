@@ -9,7 +9,7 @@ from pyparsing import (
 )
 
 from mm_filters import FILTER_MAPPING
-from mm_parsererrors import parse_error_msg
+from mm_parsererrors import parse_error_msg, is_mismatched_string_error
 from copy import deepcopy
 
 def extract_reference_strings(scheme):
@@ -146,13 +146,47 @@ def extract_reference_value_from_json(referenceStr, rawJSON):
     return data
 
 
-def extract_reference_parts(reference):
+def extract_reference_parts(reference, orig_reference=None, orig_exception=None):
     referenceGrammar = reference_bnf()
     try:
-        parsed = referenceGrammar.parseString(reference)
+        parsed = referenceGrammar.parseString(reference, parseAll=True)
     except ParseException, e:
+        # If we get an "Expected end of text" error, that basically means that
+        # at some point the scheme goes bad...which isn't really helpful. We can
+        # cope by getting the remaining portion of the string and parsing that.
+        if "Expected end of text" in str(e):
+            orig_exception = e
+
+            # Mismatched tokens may be better explained by the parse_error_msg
+            # function.
+            err_msg = parse_error_msg(e, reference)
+            if is_mismatched_string_error(err_msg, reference, e):
+                raise ParseException(e.pstr,e.loc,err_msg,e.parserElement)
+
+            # Otherwise, lets examine the remaining portion of the reference and
+            # check for more helpful errors.
+            tokens,start_idx,end_idx = referenceGrammar.scanString(reference).next()
+            leftover = reference[end_idx:]
+            extract_reference_parts(leftover, reference, orig_exception)
+
+        #############################################
         # Improve the error message, then reraise.
-        err_msg = parse_error_msg(e)
+        #############################################
+
+        # If this is a recursive call, calculate the e.loc index based on the
+        # e.loc index of the partial reference error plus the location of the
+        # partical reference within the original reference.
+        if orig_reference is not None and orig_exception is not None:
+            partial_ref_index = orig_reference.find(reference)
+            e.loc += partial_ref_index
+
+            # We want to see the original reference string in the error message,
+            # not the partial one.
+            e.pstr = orig_exception.pstr
+            err_msg = parse_error_msg(e, orig_reference)
+        else:
+            err_msg = parse_error_msg(e, reference)
+
         raise ParseException(e.pstr,e.loc,err_msg,e.parserElement)
 
     return parsed
@@ -212,15 +246,18 @@ def reference_bnf():
     # Subrange: [5:-1]
     sublist = Group(brackets(Optional(number) + colon + Optional(number)))
 
-    # Subdictionary: {"some string", "some otherstring"}
-    subdictSingle = braces(quotes(words) + ZeroOrMore(commaSep + quotes(words)))
-    subdictDbl = braces(dblquotes(words) + ZeroOrMore(commaSep + dblquotes(words)))
-    subdict = Group(subdictSingle ^ subdictDbl)
+    # Subdictionary: {"some string", "some otherstring"}, {"singleone"}
+    subdictSingleQuotedSingle = braces(quotes(words))
+    subdictSingleQuotedMultiple = braces(quotes(words) + OneOrMore(commaSep + quotes(words)))
+    subdictDblQuotedSingle = braces(dblquotes(words))
+    subdictDblQuotedMultiple = braces(dblquotes(words) + OneOrMore(commaSep + dblquotes(words)))
+    subdict = Group(subdictSingleQuotedSingle ^ subdictSingleQuotedMultiple ^ \
+                    subdictDblQuotedSingle ^ subdictDblQuotedMultiple)
 
     item = key("key") ^ \
            index("index") ^ \
            sublist("sublist") ^ \
            subdict("subdict")
 
-    term = OneOrMore(item) + stringEnd
+    term = OneOrMore(item)
     return term

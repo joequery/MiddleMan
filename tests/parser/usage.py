@@ -285,6 +285,28 @@ class FilterTests(unittest.TestCase):
         expected = "'7'"
         self.assertEqual(expected, result)
 
+    def test_lowercase_filter(self):
+        rawJSON = """
+        {
+          "name": "Joe McCullough"
+        }
+        """
+        scheme = "${['name']|lower}$"
+        result = apply_scheme_to_json(scheme, rawJSON)
+        expected = "joe mccullough"
+        self.assertEqual(expected, result)
+
+    def test_uppercase_filter(self):
+        rawJSON = """
+        {
+          "name": "Joe McCullough"
+        }
+        """
+        scheme = "${['name']|upper}$"
+        result = apply_scheme_to_json(scheme, rawJSON)
+        expected = "JOE MCCULLOUGH"
+        self.assertEqual(expected, result)
+
 try:
     from tests import api_keys
     HAVE_API_KEYS = True

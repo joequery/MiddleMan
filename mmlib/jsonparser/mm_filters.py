@@ -34,6 +34,12 @@ def double_quote_filter(value):
 def single_quote_filter(value):
     return "'%s'" % str(value)
 
+def lowercase_filter(value):
+    return str(value).lower()
+
+def uppercase_filter(value):
+    return str(value).upper()
+
 FILTER_MAPPING = {
     "bool": bool_filter,
     "boolint": boolint_filter,
@@ -42,4 +48,6 @@ FILTER_MAPPING = {
     "to_f": to_float_filter,
     "dquote": double_quote_filter,
     "squote": single_quote_filter,
+    "lower": lowercase_filter,
+    "upper": uppercase_filter,
 }

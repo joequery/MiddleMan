@@ -21,7 +21,7 @@ class MalformedKeyTests(unittest.TestCase):
         expected_err = "Error parsing [['hello']]: ' expected at index 2 (after '[')"
         self.assertEqual(str(e.exception.msg), expected_err)
 
-    def test_unclosed_key_no_keystr(self):
+    def test_unclosed_opening_key_no_keystr(self):
         with self.assertRaises(ParseException) as e:
             ref = "['hello']["
             extract_reference_parts(ref)
@@ -29,7 +29,7 @@ class MalformedKeyTests(unittest.TestCase):
         expected_err = "Error parsing ['hello'][: unmatched [ at index 9"
         self.assertEqual(str(e.exception.msg), expected_err)
 
-    def test_unclosed_key_with_keystr(self):
+    def test_unclosed_opening_key_with_keystr(self):
         with self.assertRaises(ParseException) as e:
             ref = "['hello']['there'"
             extract_reference_parts(ref)
@@ -37,28 +37,42 @@ class MalformedKeyTests(unittest.TestCase):
         expected_err = "Error parsing ['hello']['there': unmatched [ at index 9"
         self.assertEqual(str(e.exception.msg), expected_err)
 
+    def test_unopened_closing_key_no_keystr(self):
+        with self.assertRaises(ParseException) as e:
+            ref = "['hello']]"
+            extract_reference_parts(ref)
+
+        expected_err = "Error parsing ['hello']]: unmatched ] at index 9"
+        self.assertEqual(str(e.exception.msg), expected_err)
+
+    def test_unopened_closing_key_with_keystr(self):
+        with self.assertRaises(ParseException) as e:
+            ref = "['hello']'there']"
+            extract_reference_parts(ref)
+
+        expected_err = "Error parsing ['hello']'there']: unexpected ' at index 9"
+        self.assertEqual(str(e.exception.msg), expected_err)
+
+    def test_unopened_closing_key_with_keystr_dblquote(self):
+        with self.assertRaises(ParseException) as e:
+            ref = "['hello']\"there\"]"
+            extract_reference_parts(ref)
+
+        expected_err = "Error parsing ['hello']\"there\"]: unexpected \" at index 9"
+        self.assertEqual(str(e.exception.msg), expected_err)
+
+    def test_empty_keystr(self):
+        with self.assertRaises(ParseException) as e:
+            ref = "[]"
+            extract_reference_parts(ref)
+
+        expected_err = "Error parsing []: Empty brackets are invalid - an provide index or key"
+        self.assertEqual(str(e.exception.msg), expected_err)
+
 ##############
 # OLD TESTS
 ##############
 class ReferenceBNFErrors(unittest.TestCase):
-    def test_malformed_keys(self):
-        badreferences = []
-        valid = []
-        badreferences.append("[['hello']]")
-        badreferences.append("['hello'][")
-        badreferences.append("['hello']['hello']]")
-        for r in badreferences:
-            try:
-                extracted = extract_reference_parts(r)
-                types = []
-                for e in extracted:
-                    types.append(e.getName())
-                valid.append((r, extracted.asList(), types))
-            except ParseException:
-                pass
-
-        self.assertEqual(valid, [])
-
     def test_malformed_indexes(self):
         badreferences = []
         valid = []

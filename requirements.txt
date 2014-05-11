@@ -3,6 +3,8 @@ Jinja2==2.7.2
 MarkupSafe==0.23
 Werkzeug==0.9.4
 argparse==1.2.1
+ipdb==0.8
+ipython==2.0.0
 itsdangerous==0.24
 pyparsing==1.5.7
 wsgiref==0.1.2

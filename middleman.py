@@ -23,7 +23,7 @@ def process():
     resp_data = {}
 
     try:
-        result = extracted apply_scheme_to_json(post['scheme'], post['rawjson'])
+        result = apply_scheme_to_json(post['scheme'], post['rawjson'])
     except ParseException, e:
         errors = {'parse_errors': [str(e)]}
 

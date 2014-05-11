@@ -35,13 +35,13 @@
         <h1>MiddleMan JSON service</h1>
 
         <div class="row-fluid">
-            <form method="POST" action="/" class="">
+            <form method="POST" action="/process" class="">
                 <div class="row">
                     <div class="pull-left span6">
                         <div class="control-group">
-                            <label class="control-label" for="jsonresponse">JSON Response</label>
+                            <label class="control-label" for="rawjson">Raw JSON Response</label>
                             <div class="controls">
-                                <textarea class="row-fluid" rows="25" id="jsonresponse" name="jsonresponse"></textarea>
+                                <textarea class="row-fluid" rows="25" id="rawjson" name="rawjson"></textarea>
                             </div>
                         </div>
                     </div>
@@ -63,6 +63,17 @@
                     </div>
                 </div>
             </form>
+
+            <div class="row">
+                <div class="pull-left span6">
+                    <div class="control-group">
+                        <label class="control-label" for="results">Results</label>
+                        <div class="controls">
+                            <textarea class="row-fluid" rows="25" id="results" name="results"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
 

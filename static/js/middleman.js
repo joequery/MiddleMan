@@ -11,7 +11,6 @@ var process_json_scheme = function($form, $result_textarea){
     var jqxhr = $.post('/process',
         data,
         function(resp, status) {
-            console.log(resp);
             if (typeof(resp.errors) !== 'undefined'){
                 $result_textarea.val(resp.errors.message);
             }

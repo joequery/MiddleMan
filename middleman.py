@@ -5,6 +5,8 @@ from flask import Flask, request, render_template, jsonify
 from pyparsing import ParseException
 
 import datetime
+import json
+import requests
 
 from mmlib.jsonparser import apply_scheme_to_json
 from mmlib.flaskhelpers.forms import extract_post_data
@@ -17,35 +19,38 @@ def home():
 
 @app.route('/process', methods=['POST'])
 def process():
-    required_fields = ('scheme', 'rawjson')
+    required_fields = ('scheme', 'url')
     post,errors = extract_post_data(request, required_fields)
 
     if errors:
         return jsonify(errors=errors)
 
-    try:
-        result = apply_scheme_to_json(post['scheme'], post['rawjson'])
-    except ParseException, e:
-        return jsonify(errors={'message': e.msg})
+    r = requests.get(post['url'])
 
-    return jsonify(result=result)
+    if r.status_code != 200:
+        err_msg = 'Request to %s did not return 200.' % post['url']
+        return err_msg
+
+    try:
+        data = json.loads(r.content)
+        rawjson = json.dumps(data) # formatting
+    except ValueError:
+        return "Invalid JSON"
+
+    try:
+        result = apply_scheme_to_json(post['scheme'], rawjson)
+    except ParseException, e:
+        return e.msg
+
+    return result
 
 @app.route('/sampledata', methods=['GET'])
 def sample_data():
-    rawjson = """
-    {
-        "name": "Joe McCullough",
-        "GPA": 3,
-        "nickname": "JoeQuery",
-        "likes_cats": true,
-        "likes_baseball": 0,
-        "favorite_foods": ["tacos", "ramen", "burgers"]
-    }
-    """.strip()
+    url="https://api.forecast.io/forecast/18b4aae350b6ce1e1940e715e4a317f4/30.3389,-97.7707"
 
-    scheme = """The name is ${['name']}$, but you can call me ${['nickname']|dquote}$. I had a GPA of ${['GPA']|to_f}$ in college. In a binary sense, the answer to the question "Do I like cats?" is ${['likes_cats']|boolint}$. In a boolean sense, do I like baseball? ${['likes_baseball']|bool}$. I'd totally be down for some ${['favorite_foods'][1]}$ right now. """
+    scheme=render_template("examplescheme.html")
 
-    return jsonify(rawjson=rawjson, scheme=scheme)
+    return jsonify(url=url, scheme=scheme)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)

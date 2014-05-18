@@ -17,6 +17,10 @@ app = Flask(__name__)
 def home():
     return render_template("home.html")
 
+@app.route('/json_extract', methods=['GET'])
+def json_extract():
+    return render_template("json_extract.html")
+
 @app.route('/process', methods=['POST'])
 def process():
     required_fields = ('scheme', 'url')

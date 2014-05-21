@@ -23,14 +23,13 @@ $(function(){
     };
 
     var get_middleman_selector = function(e){
-        $e = $(e);
         var js_selector = "span[class^=hljs]"
-        var $parents = $e.parents(js_selector);
+        var $parents = $(e).parents(js_selector);
 
         var is_top_level_element = $parents.length == 0;
         if(is_top_level_element){
             // Top level is always a key
-            var key = "['" + $e.text() + "']";
+            var key = "['" + $(e).text() + "']";
 
             // This ends the recursion
             return key;
@@ -39,12 +38,10 @@ $(function(){
             // The first character of the parent lets us know what type of value
             // this is. We need to look for values first, then attributes if we
             // don't find any.
-            var $parent_vals = $e.parents("span.hljs-value")
-            log_el($e);
+            var $parent_vals = $(e).parents("span.hljs-value")
             if($parent_vals.length != 0){
-                var selector = get_json_selector_type($e, $parent_vals);
+                var selector = get_json_selector_type(e, $parent_vals);
                 var $next = traverse_to_closest($parent_vals, 'attribute');
-                console.log(selector);
 
                 if(selector.selector){
                     return get_middleman_selector($next) + selector.selector;
@@ -100,7 +97,6 @@ $(function(){
         var $siblings = $parents.children();
         var type, selector;
         var first_char = parent_html[0];
-        log_el('getting json type of', e);
         if(first_char == "["){
             var index = $.inArray(e, $siblings);
 
@@ -108,7 +104,7 @@ $(function(){
             selector = "[" + index + "]";
         }
         else if(first_char == "{"){
-            var key = e.text();
+            var key = $(e).text();
 
             type = "key";
             selector = "['" + key + "']";

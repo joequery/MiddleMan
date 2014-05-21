@@ -23,13 +23,14 @@ $(function(){
     };
 
     var get_middleman_selector = function(e){
+        $e = $(e);
         var js_selector = "span[class^=hljs]"
-        var $parents = $(e).parents(js_selector);
+        var $parents = $e.parents(js_selector);
 
         var is_top_level_element = $parents.length == 0;
         if(is_top_level_element){
             // Top level is always a key
-            var key = "['" + $(e).text() + "']";
+            var key = "['" + $e.text() + "']";
 
             // This ends the recursion
             return key;
@@ -38,21 +39,18 @@ $(function(){
             // The first character of the parent lets us know what type of value
             // this is. We need to look for values first, then attributes if we
             // don't find any.
-            log_el("not top level:", e);
-            var $parent_vals = $(e).parents("span.hljs-value")
+            var $parent_vals = $e.parents("span.hljs-value")
+            log_el($e);
             if($parent_vals.length != 0){
-                var selector = get_json_selector_type(e, $parent_vals);
-                console.log("Selector type: " + selector.type);
-                var $next = get_next_element($parent_vals, selector.type);
-                return get_middleman_selector($next) + selector.selector;
-            }
-            else{
-                console.log("NO VALUES FOUND");
-                var $parent_attrs = $(e).parentsUntil("span.hljs-attribute").parents();
-                var $parent_text = $parent_attrs.html()
+                var selector = get_json_selector_type($e, $parent_vals);
+                var $next = traverse_to_closest($parent_vals, 'attribute');
+                console.log(selector);
 
-                if($parent_text[0] == "{"){
-                    console.log("DO KEY!");
+                if(selector.selector){
+                    return get_middleman_selector($next) + selector.selector;
+                }
+                else{
+                    return get_middleman_selector($next);
                 }
             }
         }
@@ -62,23 +60,36 @@ $(function(){
      * Get the next element in the json traversal sequence based upon what kind
      * of selector we just found
      */
+    /*
     var get_next_element = function(e, type){
         var $parents;
         if(type === "key"){
             $parents = traverse_to_closest(e, 'attribute');
         }
+        else if(type === "element"){
+            $parents = traverse_to_closest(e, 'attribute');
+        }
+        else if(type === "key-val"){
+            $parents = traverse_to_closest(e, 'attribute');
+        }
         return $parents;
     }
+    */
 
     var traverse_to_closest = function(e, kind){
         var selector = "span[class=hljs-" + kind + "]";
         var $prev = $(e).prev(selector);
-        if ($prev.length != 0){
-            return $prev;
+        if ($prev.length){
+            return $prev.eq(0);
         }
         else{
             var $parents = $(e).parents(selector);
-            return $parents;
+            if ($parents.length){
+                return $parents.eq(0);
+            }
+            else{
+                return false;
+            }
         }
 
     }
@@ -88,17 +99,27 @@ $(function(){
         var parent_html = $parents.html();
         var $siblings = $parents.children();
         var type, selector;
-        if(parent_html[0] == "["){
+        var first_char = parent_html[0];
+        log_el('getting json type of', e);
+        if(first_char == "["){
             var index = $.inArray(e, $siblings);
 
             type = "element";
             selector = "[" + index + "]";
         }
-        else if(parent_html[0] == "{"){
-            var key = $siblings.html();
+        else if(first_char == "{"){
+            var key = e.text();
 
             type = "key";
             selector = "['" + key + "']";
+        }
+        else if (first_char == "<"){
+            type = "key-val";
+            selector = null;
+        }
+        else{
+            console.log("UNRECOGNIZED");
+            console.log(parent_html[0]);
         }
         return {selector: selector, type: type};
     };

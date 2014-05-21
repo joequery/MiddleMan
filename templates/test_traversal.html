@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>JSON Value Extractor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link href="{{url_for('static', filename='css/middleman.css')}}" rel="stylesheet">
+    <link href="{{url_for('static', filename='css/bootstrap.min.css')}}" rel="stylesheet">
+    <link href="{{url_for('static', filename='css/highlighter/default.css')}}" rel="stylesheet">
+
+    <script src="{{url_for('static', filename='js/jquery.min.js')}}"></script>
+
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+      }
+
+      h1 {
+        margin-bottom: 40px;
+      }
+    </style>
+  </head>
+
+  <body>
+
+
+    <div class="container-fluid">
+
+        <div class="navbar navbar-inverse navbar-fixed-top">
+          <div class="navbar-inner">
+            <div class="container pull-left">
+              <a class="brand" href="#">MiddleMan JSON service</a>
+            </div>
+          </div>
+        </div>
+
+        <h1>Traversal logic testing</h1>
+
+        <div class="row span8">
+<div class="row span8">
+<pre><code class=" hljs json">{
+  "<span class="hljs-attribute">args</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">key</span>": <span class="hljs-value">[
+      <span class="hljs-string">"val1"</span>,
+      <span class="hljs-string">"val2"</span>
+    ]
+  </span>}</span>,
+  "<span class="hljs-attribute">headers</span>": <span class="hljs-value">{
+    "<span class="hljs-attribute">Accept</span>": <span class="hljs-value"><span class="hljs-string">"text/html,application/xhtml+xml"</span></span>,
+    "<span class="hljs-attribute">Accept-Encoding</span>": <span class="hljs-value"><span class="hljs-string">"gzip,deflate,sdch"</span></span>,
+    "<span class="hljs-attribute">Accept-Language</span>": <span class="hljs-value"><span class="hljs-string">"en-US,en;q=0.8"</span></span>,
+    "<span class="hljs-attribute">Connection</span>": <span class="hljs-value"><span class="hljs-string">"close"</span></span>,
+    "<span class="hljs-attribute">Cookie</span>": <span class="hljs-value"><span class="hljs-string">"_gauges_unique_month=1; _gauges_unique_year=1; _gauges_unique=1"</span></span>,
+    "<span class="hljs-attribute">Host</span>": <span class="hljs-value"><span class="hljs-string">"httpbin.org"</span></span>,
+    "<span class="hljs-attribute">User-Agent</span>": <span class="hljs-value"><span class="hljs-string">"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1)"</span></span>,
+    "<span class="hljs-attribute">X-Request-Id</span>": <span class="hljs-value"><span class="hljs-string">"bd68bd97-8daf-4a7d-91d6-1e30a5d0fe75"</span>
+  </span>}</span>,
+  "<span class="hljs-attribute">origin</span>": <span class="hljs-value"><span class="hljs-string">"24.27.227.0"</span></span>,
+  "<span class="hljs-attribute">url</span>": <span class="hljs-value"><span class="hljs-string">"http://httpbin.org/get?key=val1&amp;key=val2"</span>
+</span>}</code></pre>
+        </div>
+        </div>
+    </div> <!-- /container -->
+
+    <script src="{{url_for('static', filename='js/jquery.dom-outline-1.0.js')}}"></script>
+    <script src="{{url_for('static', filename='js/json_value_extract.js')}}"></script>
+
+  </body>
+</html>
+

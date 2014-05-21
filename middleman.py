@@ -21,6 +21,10 @@ def home():
 def json_extract():
     return render_template("json_extract.html")
 
+@app.route('/test_traversal', methods=['GET'])
+def test_traversal():
+    return render_template("test_traversal.html")
+
 @app.route('/process', methods=['POST'])
 def process():
     required_fields = ('scheme', 'url')

@@ -97,6 +97,10 @@ $(function(){
         var $siblings = $parents.children();
         var type, selector;
         var first_char = parent_html[0];
+        log_el('', e);
+        log_el('', $(e).parents('span'));
+        console.log(parent_html);
+        console.log("===");
         if(first_char == "["){
             var index = $.inArray(e, $siblings);
 

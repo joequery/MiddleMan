@@ -22,23 +22,26 @@ def codify_json(json_str):
 
     def apply_attrs(d, sel='', depth=0):
         if isinstance(d, basestring):
-            s = span('value', dquote(span('string', d, sel)))
+            return span('value', dquote(span('string', d, sel)))
 
         elif isinstance(d, dict):
-            s = "{\n"
             num_keys = len(d)
-            for i, (k,v) in enumerate(d.iteritems()):
-                the_sel = sel + "['%s']" % k
-                s += tab(depth+1)
-                s += dquote(span('attribute', k)) + ': '
-                s += apply_attrs(v, the_sel, depth+1)
+            if num_keys == 0:
+                s = "{}"
+            else:
+                s = "{\n"
+                for i, (k,v) in enumerate(d.iteritems()):
+                    the_sel = sel + "['%s']" % k
+                    s += tab(depth+1)
+                    s += dquote(span('attribute', k)) + ': '
+                    s += apply_attrs(v, the_sel, depth+1)
 
-                if i<num_keys-1:
-                    s += ","
-                    s += "\n"
-            s += "\n" + tab(depth) + "}"
-
-        return s
+                    if i<num_keys-1:
+                        s += ","
+                        s += "\n"
+                s += "\n" + tab(depth) + "}"
+            s = span('value', s, sel)
+            return s
 
 
     data = json.loads(json_str)

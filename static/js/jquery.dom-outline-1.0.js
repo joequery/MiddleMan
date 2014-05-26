@@ -86,10 +86,6 @@ var DomOutline = function (options) {
                 return;
             }
         }
-        // Only select bottom level elements.
-        if(jQuery(e.target).children().length != 0){
-            return;
-        }
         pub.element = e.target;
 
         var b = self.opts.borderWidth;

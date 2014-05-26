@@ -9,3 +9,4 @@ itsdangerous==0.24
 pyparsing==1.5.7
 wsgiref==0.1.2
 requests==2.3.0
+pyquery==1.2.8

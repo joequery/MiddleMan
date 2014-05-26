@@ -30,9 +30,11 @@ def test_traversal():
 def test_codify_json():
     rawJSON = """
     {
-      "url": "http://httpbin.org/get"
+      "headers": {
+        "Host": "httpbin.org"
+      }
     }
-    """
+        """
     codified_json = codify_json(rawJSON)
     return render_template("codify_json.html", codified_json=codified_json)
 

@@ -12,8 +12,7 @@ $(function(){
     }
     var DOutline = DomOutline({
         handlers: DomOutlineHandlers,
-        //filter: 'code span:not(.hljs-attribute)'
-        filter: 'code span'
+        filter: 'code span:not(.hljs-attribute)'
     })
     DOutline.start()
 

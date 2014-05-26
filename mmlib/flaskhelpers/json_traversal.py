@@ -26,20 +26,34 @@ def codify_json(json_str):
 
         elif isinstance(d, dict):
             num_keys = len(d)
+
+            # Don't bother creating a new line and indenting for an empty dict
             if num_keys == 0:
                 s = "{}"
             else:
                 s = "{\n"
                 for i, (k,v) in enumerate(d.iteritems()):
-                    the_sel = sel + "['%s']" % k
-                    s += tab(depth+1)
-                    s += dquote(span('attribute', k)) + ': '
-                    s += apply_attrs(v, the_sel, depth+1)
+                    # The current selector for this key is where we are plus
+                    # ['key']
+                    this_sel = sel + "['%s']" % k
 
+                    # Indent for formatting
+                    s += tab(depth+1)
+
+                    # Add an attribute span around the key name
+                    s += dquote(span('attribute', k)) + ': '
+
+                    # Append the formatted value
+                    s += apply_attrs(v, this_sel, depth+1)
+
+                    # Add commas and newlines as needed
                     if i<num_keys-1:
                         s += ","
                         s += "\n"
                 s += "\n" + tab(depth) + "}"
+
+            # Wrap the whole dict in a value tag so front-end users can select
+            # the entire dict if they wish.
             s = span('value', s, sel)
             return s
 

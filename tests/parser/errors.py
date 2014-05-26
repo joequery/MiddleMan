@@ -4,7 +4,7 @@ import unittest
 from tests.testhelpers import testfile
 
 from pyparsing import ParseException
-from mmlib.jsonparser import(
+from mmlib.jsonparser.mm_parser import(
     extract_reference_parts, extract_reference_value_from_json
 )
 

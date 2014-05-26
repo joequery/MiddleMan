@@ -1,7 +1,7 @@
 # Tests that demonstrate proper references.
 import unittest
 from tests.testhelpers import testfile
-from mmlib.jsonparser import extract_reference_parts
+from mmlib.jsonparser.mm_parser import extract_reference_parts
 from mmlib.jsonparser.mm_parsererrors import has_balanced_tokens
 
 class ParserHelperTests(unittest.TestCase):

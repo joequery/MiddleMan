@@ -1,5 +1,6 @@
 from tests.testhelpers import MMTestCase
 from mmlib.flaskhelpers.json_traversal import codify_json
+from mmlib.jsonparser import apply_scheme_to_json
 import json
 
 class JSONTraversalTests(MMTestCase):

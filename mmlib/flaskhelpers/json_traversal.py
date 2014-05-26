@@ -12,12 +12,21 @@ def codify_json(json_str):
         else:
             return "<span class=\"hljs-%s\">%s</span>" % (c,v)
 
+    def dquote(s):
+        return '"%s"' % s
+
     def apply_attrs(d, s='', sel=''):
-        for k,v in d.iteritems():
-            the_sel = sel + "['%s']" % k
-            s += span('attribute', k)
-            if isinstance(v, basestring):
-                s += span('value', '"' + span('string', v, the_sel) + '"')
+        if isinstance(d, basestring):
+            s = span('value', dquote(span('string', d, sel)))
+
+        elif isinstance(d, dict):
+            s += "{\n"
+            for k,v in d.iteritems():
+                the_sel = sel + "['%s']" % k
+                s += dquote(span('attribute', k)) + ': '
+                s += apply_attrs(v, s, the_sel)
+            s += "\n}"
+
         return s
 
 

@@ -10,6 +10,7 @@ import requests
 
 from mmlib.jsonparser import apply_scheme_to_json
 from mmlib.flaskhelpers.forms import extract_post_data
+from mmlib.flaskhelpers.json_traversal import codify_json
 
 app = Flask(__name__)
 
@@ -24,6 +25,16 @@ def json_extract():
 @app.route('/test_traversal', methods=['GET'])
 def test_traversal():
     return render_template("test_traversal.html")
+
+@app.route('/test_codify_json', methods=['GET'])
+def test_codify_json():
+    rawJSON = """
+    {
+      "url": "http://httpbin.org/get"
+    }
+    """
+    codified_json = codify_json(rawJSON)
+    return render_template("codify_json.html", codified_json=codified_json)
 
 @app.route('/process', methods=['POST'])
 def process():
